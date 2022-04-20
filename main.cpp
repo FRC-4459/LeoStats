@@ -1,11 +1,10 @@
 # define JSON_DIAGNOSTICS 1
+
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <curl/curl.h>
 #include <string>
-#include <string.h>
-#include <algorithm>
-#include <typeinfo>
+#include <vector>
 #include "authkey.h"
 
 std::string getAuthKey();
@@ -98,17 +97,17 @@ int main()
         //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
         std::cout << readBuffer << std::endl;
 
-        // findAllOccurances(occurances, str, keyword);
-
-        std::cout << " The position of all the instances of " << keyword << " are: \n";
-
-        for (size_t pos : occurances)
+        
+        int i {0};
+        for (auto& x : data.items()) 
         {
-            std::cout << pos << "\n";
+            
+            std::cout << "Match Number " << data[i]["match_number"] << ":\n";
+            std::cout << "Blue: " << data[i]["alliances"]["blue"]["team_keys"] << std::endl;
+            std::cout << "Red: " << data[i]["alliances"]["red"]["team_keys"] << std::endl << std::endl;
+            i++;
         }
 
-        std::cout << occurances.size();
-        
     }
     catch (json::exception& e)
     {
