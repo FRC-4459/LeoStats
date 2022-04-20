@@ -10,20 +10,22 @@
 
 std::string getAuthKey();
 
-void findAllOccurances(std::vector<size_t>& vec, std::string data, std::string toSearch)
-{
-    // Get the first occurrence
-    size_t pos = data.find(toSearch);
-    // Repeat till end is reached
-    while (pos != std::string::npos)
-    {
-        // Add position to the vector
-        vec.push_back(pos);
-        // Get the next occurrence from the current position
-        pos = data.find(toSearch, pos + toSearch.size());
-    }
-}
-std::string readBuffer;
+// Parsing the JSON instead is a much better solution.
+
+// void findAllOccurances(std::vector<size_t>& vec, std::string data, std::string toSearch)
+// {
+//     // Get the first occurrence
+//     size_t pos = data.find(toSearch);
+//     // Repeat till end is reached
+//     while (pos != std::string::npos)
+//     {
+//         // Add position to the vector
+//         vec.push_back(pos);
+//         // Get the next occurrence from the current position
+//         pos = data.find(toSearch, pos + toSearch.size());
+//     }
+// }
+
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
@@ -32,6 +34,7 @@ static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* use
 }
 
 std::string authkey = getAuthKey();
+std::string readBuffer;
 
 void request()
 {
@@ -74,7 +77,7 @@ void request()
 
 }
 
-int main(void)
+int main()
 {
 
     std::string keyword{"},"};
@@ -86,16 +89,16 @@ int main(void)
     
     //Parse our output (readBuffer) into json
     json data = json::parse(readBuffer);
+    
+    
 
     try
     {
-        std::string str = data.dump();
-        //std::cout << str;
 
         //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
         std::cout << readBuffer << std::endl;
 
-        findAllOccurances(occurances, str, keyword);
+        // findAllOccurances(occurances, str, keyword);
 
         std::cout << " The position of all the instances of " << keyword << " are: \n";
 
