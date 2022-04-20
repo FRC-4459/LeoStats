@@ -2,12 +2,13 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <curl/curl.h>
-#include <stdio.h>
 #include <string>
+#include <string.h>
 #include <algorithm>
 #include <typeinfo>
+#include "authkey.h"
 
-getAuthKey();
+std::string getAuthKey();
 
 void findAllOccurances(std::vector<size_t>& vec, std::string data, std::string toSearch)
 {
@@ -30,6 +31,8 @@ static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* use
     return size * nmemb;
 }
 
+std::string authkey = getAuthKey();
+
 void request()
 {
     CURL* curl;
@@ -37,7 +40,7 @@ void request()
 
     //Create a list of our headers
     struct curl_slist* headers = NULL;
-    headers = curl_slist_append(headers, getAuthKey());
+    headers = curl_slist_append(headers, authkey.c_str());
     headers = curl_slist_append(headers, "accept: application/json");
 
 
