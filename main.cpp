@@ -57,7 +57,8 @@ void request()
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
         //Set verbose to 1L for extra information
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, "1L");
+            //Switched off to not display authkey.
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, NULL);
 
 
         res = curl_easy_perform(curl);
