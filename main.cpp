@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <typeinfo>
 
+getAuthKey();
+
 void findAllOccurances(std::vector<size_t>& vec, std::string data, std::string toSearch)
 {
     // Get the first occurrence
@@ -35,7 +37,7 @@ void request()
 
     //Create a list of our headers
     struct curl_slist* headers = NULL;
-    headers = curl_slist_append(headers, "X-TBA-Auth-Key: qb4mjylatxxOKg5SRLIgcLtdZfosmS7wb5pjGqFRNXHzE6c3Y1AApAiKMr16HQMo");
+    headers = curl_slist_append(headers, getAuthKey());
     headers = curl_slist_append(headers, "accept: application/json");
 
 
