@@ -88,8 +88,17 @@ int main()
     
     //Parse our output (readBuffer) into json
     json data = json::parse(readBuffer);
+
+    std::vector<std::string[]> redList;    
+    std::vector<std::string[]> blueList;
     
+    int amountMatches {0};
+    for ( auto x : data.items() ) { amountMatches++; }
     
+    for ( int i {0}; i < amountMatches; i++ ) 
+    {
+    }
+
 
     try
     {
@@ -97,18 +106,24 @@ int main()
         //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
         std::cout << readBuffer << std::endl;
 
-        
-        int i {0};
-        for (auto& x : data.items()) 
-        {
+
             
-            std::cout << "Match Number " << data[i]["match_number"] << ":\n";
-            std::cout << "Blue: " << data[i]["alliances"]["blue"]["team_keys"] << std::endl;
-            std::cout << "Red: " << data[i]["alliances"]["red"]["team_keys"] << std::endl << std::endl;
-            i++;
+
+
         }
 
+        // int i {0};
+        // for (auto& x : data.items()) 
+        // {
+            
+        //     std::cout << "Match Number " << data[i]["match_number"] << ":\n";
+        //     std::cout << "Blue: " << data[i]["alliances"]["blue"]["team_keys"] << std::endl;
+        //     std::cout << "Red: " << data[i]["alliances"]["red"]["team_keys"] << std::endl << std::endl;
+        //     i++;
+        // }
+
     }
+    
     catch (json::exception& e)
     {
         std::cout << e.what() << '\n';
