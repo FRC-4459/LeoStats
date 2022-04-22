@@ -9,23 +9,6 @@
 
 std::string getAuthKey();
 
-// Parsing the JSON instead is a much better solution.
-
-// void findAllOccurances(std::vector<size_t>& vec, std::string data, std::string toSearch)
-// {
-//     // Get the first occurrence
-//     size_t pos = data.find(toSearch);
-//     // Repeat till end is reached
-//     while (pos != std::string::npos)
-//     {
-//         // Add position to the vector
-//         vec.push_back(pos);
-//         // Get the next occurrence from the current position
-//         pos = data.find(toSearch, pos + toSearch.size());
-//     }
-// }
-
-
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
@@ -76,52 +59,61 @@ void request()
 
 }
 
-int main()
+class jstuff 
 {
-
-    std::string keyword{"},"};
-    std::vector<size_t> occurances;
-
+    public:
     using json = nlohmann::json;
-
-    request();
-    
-    //Parse our output (readBuffer) into json
     json data = json::parse(readBuffer);
+};
+jstuff jbj;
 
-    std::vector<std::string[]> redList;    
-    std::vector<std::string[]> blueList;
-    
+class info 
+{
+    private:
+
     int amountMatches {0};
-    for ( auto x : data.items() ) { amountMatches++; }
+    std::vector <std::string> redList;
+    std::vector <std::string> blueList;
+    std::vector <int> matchNumbers;
     
-    for ( int i {0}; i < amountMatches; i++ ) 
+    public:
+        
+    void countMatches() { for ( auto x : jbj.data.items() ) { amountMatches++; } }
+
+    void getData() 
     {
+    for ( int i {0}; i < amountMatches; i++ ) 
+        {
+            matchNumbers.push_back(jbj.data[i]["match_number"]);
+
+            for (int x{0}; x < jbj.data[i]["alliances"]["blue"]["team_keys"].size(); x++) 
+                { blueList.push_back(jbj.data[i]["alliances"]["blue"]["team_keys"][x]); }
+            
+            for (int x{0}; x < jbj.data[i]["alliances"]["red"]["team_keys"].size(); x++) 
+                { redList.push_back(jbj.data[i]["alliances"]["red"]["team_keys"][x]); }
+        } 
     }
 
+};
 
+info inf;
+
+int main()
+{
+    using json = nlohmann::json;
+
+    
+    request();
+    inf.countMatches();
+    inf.getData();
+    
     try
     {
-
         //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
-        std::cout << readBuffer << std::endl;
+        //std::cout << readBuffer << std::endl;
 
-
-            
-
-
-        }
-
-        // int i {0};
-        // for (auto& x : data.items()) 
-        // {
-            
-        //     std::cout << "Match Number " << data[i]["match_number"] << ":\n";
-        //     std::cout << "Blue: " << data[i]["alliances"]["blue"]["team_keys"] << std::endl;
-        //     std::cout << "Red: " << data[i]["alliances"]["red"]["team_keys"] << std::endl << std::endl;
-        //     i++;
-        // }
-
+    
+    
     }
     
     catch (json::exception& e)
