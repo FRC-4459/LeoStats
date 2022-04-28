@@ -8,17 +8,17 @@
 #include "authkey.h"
 
 nlohmann::json data;
+using json = nlohmann::json;
+
 std::string readBuffer; //String that the JSON will be stored in
-
 std::string getAuthKey();  //Forward declare so the compiler knows to search our headers (authkey.h)
+std::string authkey = getAuthKey();
 
-static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
-
-std::string authkey = getAuthKey();
 
 void request()
 {
@@ -29,7 +29,6 @@ void request()
     struct curl_slist* headers = NULL;
     headers = curl_slist_append(headers, authkey.c_str());
     headers = curl_slist_append(headers, "accept: application/json");
-
 
     curl = curl_easy_init();
     if (curl) 
@@ -43,14 +42,13 @@ void request()
 
         //Set headers to the list we made earlier
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
+        
         res = curl_easy_perform(curl);
         
         // Check for errors
         if (res != CURLE_OK)
             fprintf(stderr, "curl_easy_perform() failed: %s\n",
                 curl_easy_strerror(res));
-
 
         curl_easy_cleanup(curl); 
     } 
@@ -67,7 +65,15 @@ class info
     
     public:
 
-    void getData() 
+    void countMatches(json data) 
+    {
+       for (int i{1}; i < data.size(); i++ ) 
+       { 
+            amountMatches++; 
+        }
+    }
+
+    void getData( json data ) 
     {
         for ( int i {0}; i < amountMatches; i++ ) 
             {
@@ -108,24 +114,16 @@ int main()
 {
     using json = nlohmann::json;
     
-    try
-    {
-    //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
-    std::cout << readBuffer << std::endl;
-
+    
     request();
-    
     json data = json::parse(readBuffer);
-    
-    inf.getData();
+
+    inf.countMatches(data);
+    inf.getData(data);
     inf.printData();
     inf.printMatches();
-    } 
-       
-    catch (json::exception& e)
-    {
-        std::cout << e.what() << '\n';
-    }
-
+    
     return 0;
+    //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
+    //std::cout << readBuffer;
 }
