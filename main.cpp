@@ -1,11 +1,11 @@
-# define JSON_DIAGNOSTICS 1
-
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <curl/curl.h>
 #include <string>
 #include <vector>
 #include "authkey.h"
+
+
 
 nlohmann::json data;
 using json = nlohmann::json;
@@ -76,6 +76,9 @@ class info
 
     void getData( json data ) 
     {
+        std::string blueTempNum;
+        std::string redTempNum;
+        
         for ( int i {0}; i < amountMatches; i++ ) 
             {
                 matchNumbers.push_back(data[i]["match_number"]);
@@ -83,10 +86,18 @@ class info
                 matchTimes.push_back(data[i]["actual_time"]);
 
                 for (int x{0}; x < data[i]["alliances"]["blue"]["team_keys"].size(); x++) 
-                    { blueList.push_back(data[i]["alliances"]["blue"]["team_keys"][x]); }
+                    { 
+                        blueTempNum = data[i]["alliances"]["red"]["team_keys"][x];
+                        blueTempNum.erase(0, 3);
+                        blueList.push_back(blueTempNum); 
+                    }
                 
                 for (int x{0}; x < data[i]["alliances"]["red"]["team_keys"].size(); x++) 
-                    { redList.push_back(data[i]["alliances"]["red"]["team_keys"][x]); }
+                    { 
+                        redTempNum = data[i]["alliances"]["blue"]["team_keys"][x];
+                        redTempNum.erase(0, 3);
+                        redList.push_back(redTempNum); 
+                    }
             } 
     }
 
@@ -103,25 +114,42 @@ class info
             std::time_t result = std::time(timePtr);
             std::cout << "\n" << std::asctime(std::localtime(&result));
 
-
+            //First two team numbers print with a comma and last without
             std::cout << "Blue: ";
             for (int i {0}; i < 3; i++ )
                 { 
-                    std::cout << blueList.at(i) << ", ";
-                    blueIndex++;
-                }
-                
-            std::cout << "\n";
-            
+                    if ( i < 2 )
+                    {
+                        std::cout << blueList.at(blueIndex) << ", ";
+                        blueIndex++; 
+                    }
 
+                    else
+                    {
+                        std::cout << blueList.at(blueIndex);
+                        blueIndex++;
+                        std::cout << "\n";
+                    }
+                }
+
+
+            
             std::cout << "Red: ";
             for (int i {0}; i < 3; i++ )
                 { 
-                    std::cout << redList.at(i) << ", ";
-                    blueIndex++;
+                    if ( i < 2 )
+                    {
+                    std::cout << redList.at(redIndex) << ", ";
+                    redIndex++;
+                    }
+
+                    else 
+                    {
+                        std::cout << redList.at(redIndex);
+                        redIndex++;
+                        std::cout << "\n\n";
+                    }
                 }
-            
-            std::cout << "\n";
         }
     }
 };
@@ -159,6 +187,9 @@ int main()
 
     json data = json::parse(readBuffer);
 
+    //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
+    //std::cout << readBuffer;
+
     inf.countMatches(data);
     inf.getData(data);
     inf.printData();
@@ -166,6 +197,4 @@ int main()
     std::cout << "\n";
     
     return 0;
-    //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
-    //std::cout << readBuffer;
 }
