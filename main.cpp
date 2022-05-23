@@ -67,10 +67,15 @@ class info
 
     void countMatches(json data) 
     {
-       for (int i{1}; i < data.size(); i++ ) 
-       { 
+        for (int i{1}; i < data.size(); i++ ) 
+        { 
             amountMatches++; 
         }
+    }
+
+    void debug() 
+    {
+        std::cout << matchNumbers.at(11);
     }
 
     void getData( json data ) 
@@ -90,20 +95,32 @@ class info
     void printMatches() { std::cout << amountMatches << "\n"; }
 
     void printData() 
-    {
+    {  
+        int blueIndex {0};
+        int redIndex {0};
+        
         for (int i{0}; i < amountMatches; i++ ) 
         {
-            std::cout << "Match number " << matchNumbers[i] << ":\n";
+            std::cout << "Match number " << matchNumbers.at(i) << ":\n";
             
             std::cout << "Blue: ";
-            for (int x = (i * 3 - 2); x < (i * 3 + 1); i++ )
-            { std::cout << blueList[i] << ", "; }
-            std::cout << "\n" << "\n";
+            for (int i {0}; i < 3; i++ )
+                { 
+                    std::cout << blueList.at(i) << ", ";
+                    blueIndex++;
+                }
+                
+            std::cout << "\n";
+            
 
             std::cout << "Red: ";
-            for (int x = (i * 3 - 2); x < (i * 3 + 1); i++ )
-            { std::cout << redList[i] << ", "; }
-            std::cout << "\n" << "\n";
+            for (int i {0}; i < 3; i++ )
+                { 
+                    std::cout << redList.at(i) << ", ";
+                    blueIndex++;
+                }
+            
+            std::cout << "\n";
         }
     }
 };
@@ -121,7 +138,9 @@ int main()
     inf.countMatches(data);
     inf.getData(data);
     inf.printData();
-    inf.printMatches();
+
+    std::cout << "\n\n\n";
+    inf.debug();
     
     return 0;
     //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
