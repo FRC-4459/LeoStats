@@ -31,6 +31,7 @@ void request( std::string url )
     headers = curl_slist_append(headers, "accept: application/json");
 
     curl = curl_easy_init();
+    
     if (curl) 
     {
         //URL to request to
@@ -66,18 +67,15 @@ class info
     
     public:
 
-    void countMatches(json data) 
-    {
-        for (int i{1}; i < data.size(); i++ ) 
-        { 
-            amountMatches++; 
-        }
-    }
-
-    void getData( json data ) 
+    void getData( json data, std::string inputTeamNum ) 
     {
         std::string blueTempNum;
         std::string redTempNum;
+
+        for (int i{1}; i < data.size(); i++ ) 
+            { 
+                amountMatches++; 
+            }
         
         for ( int i {0}; i < amountMatches; i++ ) 
             {
@@ -115,7 +113,7 @@ class info
             std::cout << "\n" << std::asctime(std::localtime(&result));
 
             //First two team numbers print with a comma and last without
-            std::cout << "Blue: ";
+            std::cout << "\033[34;mBlue:\033[0m ";
             for (int i {0}; i < 3; i++ )
                 { 
                     if ( i < 2 )
@@ -133,14 +131,13 @@ class info
                 }
 
 
-            
             std::cout << "Red: ";
             for (int i {0}; i < 3; i++ )
                 { 
                     if ( i < 2 )
                     {
-                    std::cout << redList.at(redIndex) << ", ";
-                    redIndex++;
+                        std::cout << redList.at(redIndex) << ", ";
+                        redIndex++;
                     }
 
                     else 
@@ -151,16 +148,18 @@ class info
                     }
                 }
         }
+    
+        std::cout << "\n";
+
     }
 };
 
 info inf;
 
-std::string inputRequestUrl(std::string& url) 
+std::string inputRequestUrl(std::string url, std::string& inputTeamNum) 
 {
     url.append("https://www.thebluealliance.com/api/v3/team/");    
     
-    std::string inputTeamNum;
     std::cout << "Enter your team number: ";
     std::cin >> inputTeamNum;
     url.append("frc");
@@ -181,20 +180,14 @@ int main()
     using json = nlohmann::json;
     
     std::string url;
-    url = inputRequestUrl(url);
+    std::string inputTeamNum;
 
+    url = inputRequestUrl(url, inputTeamNum);
     request(url);
-
     json data = json::parse(readBuffer);
 
-    //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
-    //std::cout << readBuffer;
-
-    inf.countMatches(data);
-    inf.getData(data);
+    inf.getData(data, inputTeamNum);
     inf.printData();
-
-    std::cout << "\n";
     
     return 0;
 }
