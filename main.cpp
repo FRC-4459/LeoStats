@@ -20,7 +20,7 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
     return size * nmemb;
 }
 
-void request()
+void request( std::string url )
 {
     CURL* curl;
     CURLcode res;
@@ -34,7 +34,7 @@ void request()
     if (curl) 
     {
         //URL to request to
-        curl_easy_setopt(curl, CURLOPT_URL, "https://www.thebluealliance.com/api/v3/team/frc4459/event/2022gacar/matches/simple");
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
         //Tell curl to output our json to a string called readBuffer
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
@@ -122,12 +122,37 @@ class info
 
 info inf;
 
+std::string inputRequestUrl(std::string& url) 
+{
+    url.append("https://www.thebluealliance.com/api/v3/team/");    
+    
+    std::string inputTeamNum;
+    std::cout << "Enter your team number: ";
+    std::cin >> inputTeamNum;
+    url.append("frc");
+    url.append(inputTeamNum);
+
+    std::string inputEventKey;
+    url.append("/event/");
+    std::cout << "Enter your event number: ";
+    std::cin >> inputEventKey;
+    url.append(inputEventKey);
+    url.append("/matches/simple");
+
+    return url;
+}
+
 int main()
 {
     using json = nlohmann::json;
     
-    
-    request();
+    std::string url;
+    url = inputRequestUrl(url);
+    std::cout << url;
+    // https://www.thebluealliance.com/api/v3/team/frc4459/event/2022gadal/matches/simple
+
+    request(url);
+
     json data = json::parse(readBuffer);
 
     inf.countMatches(data);
