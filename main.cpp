@@ -62,6 +62,7 @@ class info
     std::vector <std::string> redList;
     std::vector <std::string> blueList;
     std::vector <int> matchNumbers;
+    std::vector <long int> matchTimes;
     
     public:
 
@@ -79,6 +80,8 @@ class info
             {
                 matchNumbers.push_back(data[i]["match_number"]);
 
+                matchTimes.push_back(data[i]["actual_time"]);
+
                 for (int x{0}; x < data[i]["alliances"]["blue"]["team_keys"].size(); x++) 
                     { blueList.push_back(data[i]["alliances"]["blue"]["team_keys"][x]); }
                 
@@ -87,8 +90,6 @@ class info
             } 
     }
 
-    void printMatches() { std::cout << amountMatches << "\n"; }
-
     void printData() 
     {  
         int blueIndex {0};
@@ -96,8 +97,13 @@ class info
         
         for (int i{0}; i < amountMatches; i++ ) 
         {
-            std::cout << "Match number " << matchNumbers.at(i) << ":\n";
-            
+            std::cout << "Match number " << matchNumbers.at(i) << ":  ";
+
+            long int* timePtr = &matchTimes.at(i);
+            std::time_t result = std::time(timePtr);
+            std::cout << "\n" << std::asctime(std::localtime(&result));
+
+
             std::cout << "Blue: ";
             for (int i {0}; i < 3; i++ )
                 { 
@@ -148,8 +154,6 @@ int main()
     
     std::string url;
     url = inputRequestUrl(url);
-    std::cout << url;
-    // https://www.thebluealliance.com/api/v3/team/frc4459/event/2022gadal/matches/simple
 
     request(url);
 
