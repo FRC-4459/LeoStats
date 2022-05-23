@@ -73,11 +73,6 @@ class info
         }
     }
 
-    void debug() 
-    {
-        std::cout << matchNumbers.at(11);
-    }
-
     void getData( json data ) 
     {
         for ( int i {0}; i < amountMatches; i++ ) 
@@ -139,8 +134,7 @@ int main()
     inf.getData(data);
     inf.printData();
 
-    std::cout << "\n\n\n";
-    inf.debug();
+    std::cout << "\n";
     
     return 0;
     //This prints the raw response unparsed. Useful because it is formatted whereas the JSON is not.
