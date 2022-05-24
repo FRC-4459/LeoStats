@@ -1,5 +1,5 @@
 #include <iostream>
-#include <nlohmann/json.hpp>
+#include <json.hpp>
 #include <curl/curl.h>
 #include <string>
 #include <vector>
@@ -64,6 +64,7 @@ class info
     std::vector <std::string> blueList;
     std::vector <int> matchNumbers;
     std::vector <long int> matchTimes;
+    bool teamIsBlue = true;
     
     public:
 
@@ -99,7 +100,7 @@ class info
             } 
     }
 
-    void printData() 
+    void printData( std::string inputTeamNum ) 
     {  
         int blueIndex {0};
         int redIndex {0};
@@ -113,17 +114,23 @@ class info
             std::cout << "\n" << std::asctime(std::localtime(&result));
 
             //First two team numbers print with a comma and last without
-            std::cout << "\033[34;mBlue:\033[0m ";
+            std::cout << "Blue: ";
             for (int i {0}; i < 3; i++ )
                 { 
                     if ( i < 2 )
                     {
+                        if ( blueList.at(blueIndex) == inputTeamNum )
+                            { teamIsBlue = true; }                        
+                        
                         std::cout << blueList.at(blueIndex) << ", ";
                         blueIndex++; 
                     }
 
                     else
                     {
+                        if ( blueList.at(blueIndex) == inputTeamNum )
+                            { teamIsBlue = true; }                                                
+                        
                         std::cout << blueList.at(blueIndex);
                         blueIndex++;
                         std::cout << "\n";
@@ -136,20 +143,33 @@ class info
                 { 
                     if ( i < 2 )
                     {
+                        if ( redList.at(redIndex) == inputTeamNum )
+                            { teamIsBlue = false; }
+                        
                         std::cout << redList.at(redIndex) << ", ";
                         redIndex++;
                     }
 
                     else 
                     {
+                        if ( redList.at(redIndex) == inputTeamNum )
+                            { teamIsBlue = false; }                        
+                        
                         std::cout << redList.at(redIndex);
                         redIndex++;
+                        
+                        if ( teamIsBlue == true )
+                            { std::cout << "\nYou need BLUE bumpers this match.";  }
+                        else 
+                            { std::cout << "\nYou need RED bumpers this match."; }
+                        
                         std::cout << "\n\n";
                     }
                 }
         }
     
         std::cout << "\n";
+
 
     }
 };
@@ -187,7 +207,7 @@ int main()
     json data = json::parse(readBuffer);
 
     inf.getData(data, inputTeamNum);
-    inf.printData();
+    inf.printData(inputTeamNum);
     
     return 0;
 }
