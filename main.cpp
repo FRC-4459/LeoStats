@@ -6,7 +6,6 @@
 #include "authkey.h"
 
 
-
 nlohmann::json data;
 using json = nlohmann::json;
 
@@ -59,12 +58,16 @@ class info
 {
     private:
 
-    int amountMatches = data.size();
-    std::vector <std::string> redList;
-    std::vector <std::string> blueList;
-    std::vector <int> matchNumbers;
-    std::vector <long int> matchTimes;
-    bool teamIsBlue = true;
+    struct game 
+    {
+        int matchNumber {0};
+        long int matchTime {0};
+        int blue[3] { 0, 0, 0 };
+        int red[3] { 0, 0, 0 };
+        bool isBlue {false};
+    };
+    
+    std::vector<game> games;
     
     public:
 
@@ -72,104 +75,79 @@ class info
     {
         std::string blueTempNum;
         std::string redTempNum;
+        game currentGame;
 
-        for (int i{1}; i < data.size(); i++ ) 
-            { 
-                amountMatches++; 
-            }
-        
-        for ( int i {0}; i < amountMatches; i++ ) 
+        for ( int i {0}; i < data.size(); i++ ) 
             {
-                matchNumbers.push_back(data[i]["match_number"]);
-
-                matchTimes.push_back(data[i]["actual_time"]);
+                currentGame.matchNumber = data[i]["match_number"];
+                currentGame.matchTime = data[i]["actual_time"];
 
                 for (int x{0}; x < data[i]["alliances"]["blue"]["team_keys"].size(); x++) 
                     { 
                         blueTempNum = data[i]["alliances"]["red"]["team_keys"][x];
-                        blueTempNum.erase(0, 3);
-                        blueList.push_back(blueTempNum); 
+                        currentGame.blue[x] = stoi(blueTempNum.erase(0, 3));
+                        
+                        if ( blueTempNum == inputTeamNum )
+                            { currentGame.isBlue = true; }
                     }
                 
                 for (int x{0}; x < data[i]["alliances"]["red"]["team_keys"].size(); x++) 
                     { 
                         redTempNum = data[i]["alliances"]["blue"]["team_keys"][x];
-                        redTempNum.erase(0, 3);
-                        redList.push_back(redTempNum); 
+                        currentGame.red[x] = std::stoi(redTempNum.erase(0, 3)); 
+                        
+                        if ( redTempNum == inputTeamNum )
+                            { currentGame.isBlue = false; }
                     }
+
+                    games.push_back(currentGame);
             } 
     }
 
-    void printData( std::string inputTeamNum ) 
+    void printData( json data ) 
     {  
-        int blueIndex {0};
-        int redIndex {0};
-        
-        for (int i{0}; i < amountMatches; i++ ) 
+        for (int i{0}; i < data.size(); i++ ) 
         {
-            std::cout << "Match number " << matchNumbers.at(i) << ":  ";
+            std::cout << "Match number " << games.at(i).matchNumber << ":  ";
 
-            long int* timePtr = &matchTimes.at(i);
+            long int* timePtr = &games.at(i).matchTime;
             std::time_t result = std::time(timePtr);
             std::cout << "\n" << std::asctime(std::localtime(&result));
 
             //First two team numbers print with a comma and last without
             std::cout << "Blue: ";
-            for (int i {0}; i < 3; i++ )
+            for (int x {0}; x < 3; x++ )
                 { 
-                    if ( i < 2 )
-                    {
-                        if ( blueList.at(blueIndex) == inputTeamNum )
-                            { teamIsBlue = true; }                        
-                        
-                        std::cout << blueList.at(blueIndex) << ", ";
-                        blueIndex++; 
-                    }
-
+                    std::cout << games.at(i).blue[x];
+                    
+                    if ( x < 2 )
+                        { std::cout << ", "; }
                     else
-                    {
-                        if ( blueList.at(blueIndex) == inputTeamNum )
-                            { teamIsBlue = true; }                                                
-                        
-                        std::cout << blueList.at(blueIndex);
-                        blueIndex++;
-                        std::cout << "\n";
-                    }
+                        { std::cout << "\n"; }
                 }
-
 
             std::cout << "Red: ";
-            for (int i {0}; i < 3; i++ )
+            for (int x {0}; x < 3; x++ )
+            {
                 { 
-                    if ( i < 2 )
-                    {
-                        if ( redList.at(redIndex) == inputTeamNum )
-                            { teamIsBlue = false; }
-                        
-                        std::cout << redList.at(redIndex) << ", ";
-                        redIndex++;
-                    }
-
-                    else 
-                    {
-                        if ( redList.at(redIndex) == inputTeamNum )
-                            { teamIsBlue = false; }                        
-                        
-                        std::cout << redList.at(redIndex);
-                        redIndex++;
-                        
-                        if ( teamIsBlue == true )
-                            { std::cout << "\nYou need BLUE bumpers this match.";  }
-                        else 
-                            { std::cout << "\nYou need RED bumpers this match."; }
-                        
-                        std::cout << "\n\n";
-                    }
+                    std::cout << games.at(i).red[x];
+                    
+                    if ( x < 2 )
+                        { std::cout << ", "; }
+                    else
+                        { std::cout << "\n"; }
                 }
+                        
+            }
+        
+        if ( games.at(i).isBlue == true )
+            { std::cout << "You need BLUE bumpers this match.";  }
+        else 
+            { std::cout << "You need RED bumpers this match."; }
+        std::cout << "\n\n\n";
+
         }
     
-        std::cout << "\n";
-
 
     }
 };
@@ -207,7 +185,7 @@ int main()
     json data = json::parse(readBuffer);
 
     inf.getData(data, inputTeamNum);
-    inf.printData(inputTeamNum);
+    inf.printData( data );
     
     return 0;
 }
