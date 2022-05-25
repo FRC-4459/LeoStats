@@ -1,10 +1,9 @@
 #include <iostream>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <curl/curl.h>
 #include <string>
 #include <vector>
 #include "authkey.h"
-
 
 nlohmann::json data;
 using json = nlohmann::json;
@@ -65,9 +64,59 @@ class info
         int blue[3] { 0, 0, 0 };
         int red[3] { 0, 0, 0 };
         bool isBlue {false};
+        std::string compLevel {"qm"};
     };
     
     std::vector<game> games;
+
+    void printGame(int i) 
+    {
+        if ( games.at(i).compLevel == "qm" )
+                { std::cout << "Qualifier "; }
+        else if ( games.at(i).compLevel == "qf" )
+                { std::cout << "Quarterfinal "; }
+        else if ( games.at(i).compLevel == "sf" )
+                { std::cout << "Semifinal "; }
+        else if ( games.at(i).compLevel == "f" )
+                { std::cout << "Final "; }
+        std::cout << games.at(i).matchNumber << ":  ";
+
+        long int* timePtr = &games.at(i).matchTime;
+        std::time_t result = std::time(timePtr);
+        std::cout << "\n" << std::asctime(std::localtime(&result));
+
+        //First two team numbers print with a comma and last without
+        std::cout << "Blue: ";
+        for (int x {0}; x < 3; x++ )
+            { 
+                std::cout << games.at(i).blue[x];
+                
+                if ( x < 2 )
+                    { std::cout << ", "; }
+                else
+                    { std::cout << "\n"; }
+            }
+
+        std::cout << "Red: ";
+        for (int x {0}; x < 3; x++ )
+        {
+            { 
+                std::cout << games.at(i).red[x];
+                
+                if ( x < 2 )
+                    { std::cout << ", "; }
+                else
+                    { std::cout << "\n"; }
+            }
+                    
+        }
+
+    if ( games.at(i).isBlue == true )
+        { std::cout << "You need BLUE bumpers this match.";  }
+    else 
+        { std::cout << "You need RED bumpers this match."; }
+    std::cout << "\n\n\n";
+    }
     
     public:
 
@@ -81,6 +130,7 @@ class info
             {
                 currentGame.matchNumber = data[i]["match_number"];
                 currentGame.matchTime = data[i]["actual_time"];
+                currentGame.compLevel = data[i]["comp_level"];
 
                 for (int x{0}; x < data[i]["alliances"]["blue"]["team_keys"].size(); x++) 
                     { 
@@ -104,51 +154,31 @@ class info
             } 
     }
 
-    void printData( json data ) 
+    void printingLogic( json data ) 
     {  
         for (int i{0}; i < data.size(); i++ ) 
         {
-            std::cout << "Match number " << games.at(i).matchNumber << ":  ";
-
-            long int* timePtr = &games.at(i).matchTime;
-            std::time_t result = std::time(timePtr);
-            std::cout << "\n" << std::asctime(std::localtime(&result));
-
-            //First two team numbers print with a comma and last without
-            std::cout << "Blue: ";
-            for (int x {0}; x < 3; x++ )
-                { 
-                    std::cout << games.at(i).blue[x];
-                    
-                    if ( x < 2 )
-                        { std::cout << ", "; }
-                    else
-                        { std::cout << "\n"; }
-                }
-
-            std::cout << "Red: ";
-            for (int x {0}; x < 3; x++ )
-            {
-                { 
-                    std::cout << games.at(i).red[x];
-                    
-                    if ( x < 2 )
-                        { std::cout << ", "; }
-                    else
-                        { std::cout << "\n"; }
-                }
-                        
-            }
+            if ( games.at(i).compLevel == "qm" )
+                { printGame(i); }
+        }
         
-        if ( games.at(i).isBlue == true )
-            { std::cout << "You need BLUE bumpers this match.";  }
-        else 
-            { std::cout << "You need RED bumpers this match."; }
-        std::cout << "\n\n\n";
+        for (int i{0}; i < data.size(); i++ ) 
+        {
+            if ( games.at(i).compLevel == "qf" )
+                { printGame(i); }
+        }
 
+        for (int i{0}; i < data.size(); i++ ) 
+        {
+            if ( games.at(i).compLevel == "sf" )
+                { printGame(i); }
         }
     
-
+        for (int i{0}; i < data.size(); i++ ) 
+        {
+            if ( games.at(i).compLevel == "f" )
+                { printGame(i); }
+        }
     }
 };
 
@@ -183,9 +213,8 @@ int main()
     url = inputRequestUrl(url, inputTeamNum);
     request(url);
     json data = json::parse(readBuffer);
-
     inf.getData(data, inputTeamNum);
-    inf.printData( data );
+    inf.printingLogic( data );
     
     return 0;
 }
