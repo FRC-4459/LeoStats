@@ -9,8 +9,8 @@
 nlohmann::json data;
 using json = nlohmann::json;
 
-std::string readBuffer; //String that the JSON will be stored in
-std::string getAuthKey();  //Forward declare so the compiler knows to search our headers (authkey.h)
+std::string readBuffer;
+std::string getAuthKey();
 std::string authkey = getAuthKey();
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -54,118 +54,63 @@ void request( std::string url )
     } 
 }
 
-class info 
+class game 
 {
     private:
-
-    struct game 
-    {
         int matchNumber {0};
         long int matchTime {0};
-        int blue[3] { 0, 0, 0 };
-        int red[3] { 0, 0, 0 };
-        bool isBlue {false};
-    };
-    
-    std::vector<game> games;
+        std::string blue[3] { "0", "0", "0" };
+        std::string red[3] { "0", "0", "0" };
+        std::string myAlliance { "RED" };
+        //MATCHTYPE HERE
     
     public:
-
-    void getData( json data, std::string inputTeamNum ) 
-    {
-        std::string blueTempNum;
-        std::string redTempNum;
-        game currentGame;
-
-        for ( int i {0}; i < data.size(); i++ ) 
-            {
-                currentGame.matchNumber = data[i]["match_number"];
-                currentGame.matchTime = data[i]["actual_time"];
-
-                for (int x{0}; x < data[i]["alliances"]["blue"]["team_keys"].size(); x++) 
-                    { 
-                        blueTempNum = data[i]["alliances"]["red"]["team_keys"][x];
-                        currentGame.blue[x] = stoi(blueTempNum.erase(0, 3));
-                        
-                        if ( blueTempNum == inputTeamNum )
-                            { currentGame.isBlue = true; }
-                    }
-                
-                for (int x{0}; x < data[i]["alliances"]["red"]["team_keys"].size(); x++) 
-                    { 
-                        redTempNum = data[i]["alliances"]["blue"]["team_keys"][x];
-                        currentGame.red[x] = std::stoi(redTempNum.erase(0, 3)); 
-                        
-                        if ( redTempNum == inputTeamNum )
-                            { currentGame.isBlue = false; }
-                    }
-
-                    games.push_back(currentGame);
-            } 
-    }
-
-    void printData( json data ) 
-    {  
-        for (int i{0}; i < data.size(); i++ ) 
+        void getGame( json data, int index, std::string teamNum ) 
         {
-            std::cout << "Match number " << games.at(i).matchNumber << ":  ";
-
-            long int* timePtr = &games.at(i).matchTime;
-            std::time_t result = std::time(timePtr);
-            std::cout << "\n" << std::asctime(std::localtime(&result));
-
-            //First two team numbers print with a comma and last without
-            std::cout << "Blue: ";
-            for (int x {0}; x < 3; x++ )
-                { 
-                    std::cout << games.at(i).blue[x];
-                    
-                    if ( x < 2 )
-                        { std::cout << ", "; }
-                    else
-                        { std::cout << "\n"; }
-                }
-
-            std::cout << "Red: ";
-            for (int x {0}; x < 3; x++ )
+            matchNumber = data[index]["match_number"];
+            matchTime = data[index]["actual_time"]; //We also need the predicted time!!!!
+            
+            for ( int i{0}; i < 3; i++ )
             {
-                { 
-                    std::cout << games.at(i).red[x];
-                    
-                    if ( x < 2 )
-                        { std::cout << ", "; }
-                    else
-                        { std::cout << "\n"; }
-                }
-                        
+                blue[i] = data[index]["alliances"]["blue"]["team_keys"][i];
+                blue[i].erase(0, 3);
+                
+                red[i] = data[index]["alliances"]["red"]["team_keys"][i];
+                red[i].erase(0, 3);
+                
             }
-        
-        if ( games.at(i).isBlue == true )
-            { std::cout << "You need BLUE bumpers this match.";  }
-        else 
-            { std::cout << "You need RED bumpers this match."; }
-        std::cout << "\n\n\n";
-
+            
+            for ( int i{0}; i < 3; i++ )
+                if ( blue[i] == teamNum ) 
+                    { myAlliance = "BLUE"; break; }
+                else
+                    { myAlliance = "RED"; }
         }
-    
 
-    }
+        void print() 
+        {
+            using namespace std;
+            cout << "Match number " << matchNumber << ":\n";
+            cout << std::asctime(std::localtime(&matchTime));
+            cout << "Blue Alliance: " << blue[0] << ", " << blue[1] << ", " << blue[2] << "\n";
+            cout << "Red Alliance: " << red[0] << ", " << red[1] << ", " << red[2] << "\n";
+            cout << "You need " << myAlliance << " bumpers this match.\n\n\n";
+        }
+
 };
 
-info inf;
-
-std::string inputRequestUrl(std::string url, std::string& inputTeamNum) 
+std::string inputRequestUrl(std::string url, std::string& teamNum) 
 {
     url.append("https://www.thebluealliance.com/api/v3/team/");    
     
     std::cout << "Enter your team number: ";
-    std::cin >> inputTeamNum;
+    std::cin >> teamNum;
     url.append("frc");
-    url.append(inputTeamNum);
+    url.append(teamNum);
 
     std::string inputEventKey;
     url.append("/event/");
-    std::cout << "Enter your event number: ";
+    std::cout << "Enter your event code: ";
     std::cin >> inputEventKey;
     url.append(inputEventKey);
     url.append("/matches/simple");
@@ -176,16 +121,27 @@ std::string inputRequestUrl(std::string url, std::string& inputTeamNum)
 int main()
 {
     using json = nlohmann::json;
-    
-    std::string url;
-    std::string inputTeamNum;
 
-    url = inputRequestUrl(url, inputTeamNum);
+    std::vector<game> games;
+    game currentGame;
+
+    std::string url;
+    std::string teamNum;
+
+    url = inputRequestUrl(url, teamNum);
     request(url);
     json data = json::parse(readBuffer);
 
-    inf.getData(data, inputTeamNum);
-    inf.printData( data );
+    for ( int i{0}; i < data.size(); i++ )
+    {
+        currentGame.getGame(data, i, teamNum);
+        games.push_back(currentGame);
+    }
+
+    for ( int i{0}; i < games.size(); i++ )
+        { games.at(i).print(); }
+
+    //std::cout << "\n\n\n" << readBuffer << "\n\n\n";
     
     return 0;
 }
