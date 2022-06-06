@@ -1,5 +1,5 @@
 #include <iostream>
-#include <nlohmann/json.hpp>
+#include <json.hpp>
 #include <curl/curl.h>
 #include <string>
 #include <vector>
@@ -22,6 +22,8 @@ void request( std::string url )
 {
     CURL* curl;
     CURLcode res;
+
+    std::string eventsByTeam {"https://www.thebluealliance.com/api/v3/team/frc4459/events/2022/simple"};
 
     //Create a list of our headers; One for authorization, the other to tell the program to accept a JSON response
     struct curl_slist* headers = NULL;
@@ -98,11 +100,12 @@ class game
 
 };
 
-std::string inputRequestUrl(std::string url, std::string& teamNum) 
+std::string inputRequestUrl(std::string &url, std::string& teamNum) 
 {
+    
     url.append("https://www.thebluealliance.com/api/v3/team/");    
     
-    std::cout << "Enter your team number: ";
+    std::cout << "\nEnter your team number: ";
     std::cin >> teamNum;
     url.append("frc");
     url.append(teamNum);
@@ -125,11 +128,32 @@ int main()
     game currentGame;
 
     std::string url;
+    std::string* urlPtr = &url;
     std::string teamNum;
 
-    url = inputRequestUrl(url, teamNum);
+    inputRequestUrl(url, teamNum);
     request(url);
     json data = json::parse(readBuffer);
+
+    while ( true )
+    {
+        if ( data.empty() || data.contains("Error")  ) 
+        {
+            if ( data.empty() )
+                { std::cout << "\nNo results found. Maybe your search was faulty?\n"; }
+            else if ( data.contains("Error") )
+                { std::cout << data.at("Error"); }
+
+            url.clear();
+            inputRequestUrl(url, teamNum); 
+            readBuffer.clear();
+            request(url);
+            data = json::parse(readBuffer);
+        }
+
+        else 
+            { break; }
+    }
 
     for ( int i{0}; i < data.size(); i++ )
     {
