@@ -4,6 +4,13 @@
 #include <string>
 #include <vector>
 #include "authkey.h"
+#include <typeinfo>
+
+/* TODO:
+Expected time handling
+A "toggle" for displaying all matches in an event rather than just those of your team
+Sorting the matches by comp level, then match number (enum the comp levels)
+*/
 
 nlohmann::json data;
 using json = nlohmann::json;
@@ -63,20 +70,32 @@ class game
         std::string blue[3] { "0", "0", "0" };
         std::string red[3] { "0", "0", "0" };
         std::string myAlliance { "RED" };
-        //MATCHTYPE HERE
+        std::string matchType {"match"};
+
+        template <typename T>
+        void grabFromJSON(T &var, nlohmann::json value) 
+        {
+            if ( value.is_null() )
+                { return; }
+            else
+                { var = value.get<T>(); }
+        }
     
     public:
         void getGame( json data, int index, std::string teamNum ) 
         {
-            matchNumber = data[index]["match_number"];
-            matchTime = data[index]["actual_time"]; //We also need the predicted time!!!!
-            
+            //matchNumber = data[index]["match_number"].get<int>();
+            grabFromJSON<int>(matchNumber, data[index]["match_number"]);
+            //matchTime = data[index]["actual_time"].get<long int>(); //We also need the predicted time!!!!
+            grabFromJSON<long int>(matchTime, data[index]["actual_time"]);
+            //matchType = data[index]["comp_level"].get<std::string>();
+            grabFromJSON<std::string>(matchType, data[index]["comp_level"]);
             for ( int i{0}; i < 3; i++ )
             {
-                blue[i] = data[index]["alliances"]["blue"]["team_keys"][i];
+                blue[i] = data[index]["alliances"]["blue"]["team_keys"][i].get<std::string>();
                 blue[i].erase(0, 3);
                 
-                red[i] = data[index]["alliances"]["red"]["team_keys"][i];
+                red[i] = data[index]["alliances"]["red"]["team_keys"][i].get<std::string>();
                 red[i].erase(0, 3);
                 
             }
@@ -102,16 +121,25 @@ class game
 
 std::string inputRequestUrl(std::string &url, std::string& teamNum) 
 {
-    
-    url.append("https://www.thebluealliance.com/api/v3/team/");    
-    
-    std::cout << "\nEnter your team number: ";
-    std::cin >> teamNum;
-    url.append("frc");
-    url.append(teamNum);
+    std::string type {"team"};
+    std::cout << "All matches or those for your team: ";
+    std::cin >> type;
+
+    if ( type == "team" )
+        { 
+            url.append("https://www.thebluealliance.com/api/v3/team/");
+            std::cout << "Enter your team number: ";
+            std::cin >> teamNum;
+            url.append("frc");
+            url.append(teamNum);
+        }
+    else if ( type == "all" )
+        { url.append("https://www.thebluealliance.com/api/v3/event/"); }
+        
 
     std::string inputEventKey;
-    url.append("/event/");
+    if ( type == "team" )
+        { url.append("/event/"); }
     std::cout << "Enter your event code: ";
     std::cin >> inputEventKey;
     url.append(inputEventKey);
@@ -142,7 +170,7 @@ int main()
             if ( data.empty() )
                 { std::cout << "\nNo results found. Maybe your search was faulty?\n"; }
             else if ( data.contains("Error") )
-                { std::cout << data.at("Error"); }
+                { std::cout << "\n" << data.at("Error"); }
 
             url.clear();
             inputRequestUrl(url, teamNum); 
@@ -164,7 +192,7 @@ int main()
     for ( int i{0}; i < games.size(); i++ )
         { games.at(i).print(); }
 
-    //std::cout << "\n\n\n" << readBuffer << "\n\n\n";
+    // std::cout << "\n\n\n" << readBuffer << "\n\n\n";
     
     return 0;
 }
