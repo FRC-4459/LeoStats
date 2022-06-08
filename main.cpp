@@ -62,7 +62,7 @@ void request( std::string url )
     } 
 }
 
-class game 
+class game
 {
     private:
         int matchNumber {0};
@@ -75,47 +75,70 @@ class game
         template <typename T>
         void grabFromJSON(T &var, nlohmann::json value) 
         {
-            if ( value.is_null() )
+            if ( value.is_null() || value.empty() )
                 { return; }
             else
                 { var = value.get<T>(); }
         }
     
     public:
+        void reset() 
+        {
+            matchNumber = 0;
+            matchTime = 0;
+            blue[0] = "0"; blue[1] = "0"; blue[2] = "0";
+            red[0] = "0"; red[1] = "0"; red[2] = "0";
+            myAlliance = "N/A";
+            matchType = "match";
+        }
+
+        void checks() 
+        {
+            for (int i{0}; i < 3; i++ )
+            {
+                if ( blue[i].empty() )
+                    { blue[i] == "N/A"; }
+                if ( red[i].empty() )
+                    { red[i] == "N/A";  }
+            }
+        }
+        
         void getGame( json data, int index, std::string teamNum ) 
         {
-            //matchNumber = data[index]["match_number"].get<int>();
             grabFromJSON<int>(matchNumber, data[index]["match_number"]);
-            //matchTime = data[index]["actual_time"].get<long int>(); //We also need the predicted time!!!!
             grabFromJSON<long int>(matchTime, data[index]["actual_time"]);
-            //matchType = data[index]["comp_level"].get<std::string>();
             grabFromJSON<std::string>(matchType, data[index]["comp_level"]);
             for ( int i{0}; i < 3; i++ )
             {
-                blue[i] = data[index]["alliances"]["blue"]["team_keys"][i].get<std::string>();
+                grabFromJSON<std::string>(blue[i], data[index]["alliances"]["blue"]["team_keys"][i]);
                 blue[i].erase(0, 3);
                 
-                red[i] = data[index]["alliances"]["red"]["team_keys"][i].get<std::string>();
+                grabFromJSON<std::string>(red[i], data[index]["alliances"]["red"]["team_keys"][i]);
                 red[i].erase(0, 3);
-                
             }
             
             for ( int i{0}; i < 3; i++ )
+            {
                 if ( blue[i] == teamNum ) 
                     { myAlliance = "BLUE"; break; }
-                else
-                    { myAlliance = "RED"; }
+                else if ( red[i] == teamNum )
+                    { myAlliance = "RED"; break; }
+            }
         }
 
-        void print() 
+        void print()
         {
             using namespace std;
             cout << "Match number " << matchNumber << ":\n";
-            cout << std::asctime(std::localtime(&matchTime));
+            if ( matchTime == 0 )
+                { cout << "N/A"; }
+            else
+                { cout << std::asctime(std::localtime(&matchTime)); }
             cout << "Blue Alliance: " << blue[0] << ", " << blue[1] << ", " << blue[2] << "\n";
             cout << "Red Alliance: " << red[0] << ", " << red[1] << ", " << red[2] << "\n";
             cout << "You need " << myAlliance << " bumpers this match.\n\n\n";
         }
+
 
 };
 
@@ -185,6 +208,7 @@ int main()
 
     for ( int i{0}; i < data.size(); i++ )
     {
+        currentGame.reset();
         currentGame.getGame(data, i, teamNum);
         games.push_back(currentGame);
     }
