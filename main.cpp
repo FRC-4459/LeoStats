@@ -1,15 +1,17 @@
 #include <iostream>
-#include <json.hpp>
-#include <curl/curl.h>
 #include <string>
 #include <vector>
+
+#include <json.hpp>
+#include <curl/curl.h>
+
 #include "authkey.h"
-#include <typeinfo>
+
+class game;
 
 /* TODO:
 Expected time handling
-A "toggle" for displaying all matches in an event rather than just those of your team
-Sorting the matches by comp level, then match number (enum the comp levels)
+Sorting the matches by comp level, then match number
 */
 
 nlohmann::json data;
@@ -18,6 +20,21 @@ using json = nlohmann::json;
 std::string readBuffer;
 std::string getAuthKey();
 std::string authkey = getAuthKey();
+
+std::string setType( std::string type ) 
+{
+    if ( type == "qm" )
+        { return "Qualifier"; }
+    else if ( type == "ef" )
+        { return "Elimination"; }
+    else if ( type == "qf" )
+        { return "Quarterfinal"; }
+    else if ( type == "sf" )
+        { return "Semifinal"; }
+    else if ( type == "f" )
+        { return "Final"; }
+    return "N/A";
+}
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
@@ -67,10 +84,11 @@ class game
     private:
         int matchNumber {0};
         long int matchTime {0};
+        bool userParticipating { false };
         std::string blue[3] { "0", "0", "0" };
         std::string red[3] { "0", "0", "0" };
         std::string myAlliance { "RED" };
-        std::string matchType {"match"};
+        std::string matchType {"N/A"};
 
         template <typename T>
         void grabFromJSON(T &var, nlohmann::json value) 
@@ -82,6 +100,7 @@ class game
         }
     
     public:
+        
         void reset() 
         {
             matchNumber = 0;
@@ -89,7 +108,8 @@ class game
             blue[0] = "0"; blue[1] = "0"; blue[2] = "0";
             red[0] = "0"; red[1] = "0"; red[2] = "0";
             myAlliance = "N/A";
-            matchType = "match";
+            matchType = "N/A";
+            userParticipating = false;
         }
 
         void checks() 
@@ -108,6 +128,9 @@ class game
             grabFromJSON<int>(matchNumber, data[index]["match_number"]);
             grabFromJSON<long int>(matchTime, data[index]["actual_time"]);
             grabFromJSON<std::string>(matchType, data[index]["comp_level"]);
+            
+            matchType = setType(matchType);
+            
             for ( int i{0}; i < 3; i++ )
             {
                 grabFromJSON<std::string>(blue[i], data[index]["alliances"]["blue"]["team_keys"][i]);
@@ -120,54 +143,74 @@ class game
             for ( int i{0}; i < 3; i++ )
             {
                 if ( blue[i] == teamNum ) 
-                    { myAlliance = "BLUE"; break; }
+                    { 
+                        myAlliance = "BLUE"; 
+                        userParticipating = true;
+                        break; 
+                    }
                 else if ( red[i] == teamNum )
-                    { myAlliance = "RED"; break; }
+                    { 
+                        myAlliance = "RED"; 
+                        userParticipating = true;
+                        break; 
+                    }
             }
         }
 
         void print()
         {
-            using namespace std;
-            cout << "Match number " << matchNumber << ":\n";
+            using std::cout;
+            
+            cout << matchType << " " << matchNumber << ":\n";
+            
             if ( matchTime == 0 )
                 { cout << "N/A"; }
             else
                 { cout << std::asctime(std::localtime(&matchTime)); }
+            
             cout << "Blue Alliance: " << blue[0] << ", " << blue[1] << ", " << blue[2] << "\n";
             cout << "Red Alliance: " << red[0] << ", " << red[1] << ", " << red[2] << "\n";
-            cout << "You need " << myAlliance << " bumpers this match.\n\n\n";
+            
+            if ( userParticipating == true )
+                { cout << "You need " << myAlliance << " bumpers this match."; }
+
+            cout << "\n\n";
         }
 
 
 };
 
-std::string inputRequestUrl(std::string &url, std::string& teamNum) 
+std::string getUrl(std::string &url, std::string &teamNum) 
 {
-    std::string type {"team"};
-    std::cout << "All matches or those for your team: ";
-    std::cin >> type;
 
-    if ( type == "team" )
+    std::string requestType {"team"};
+    std::cout << "All matches or those for your team: ";
+    std::cin >> requestType;
+    
+    std::cout << "Enter your team number: ";
+    std::cin >> teamNum;
+    
+    std::string eventKey;
+    std::cout << "Enter your event code: ";
+    std::cin >> eventKey;
+    
+    if ( requestType == "team" )
         { 
             url.append("https://www.thebluealliance.com/api/v3/team/");
-            std::cout << "Enter your team number: ";
-            std::cin >> teamNum;
             url.append("frc");
             url.append(teamNum);
+            url.append("/event/");
+            url.append(eventKey);
+            url.append("/matches/simple");
         }
-    else if ( type == "all" )
-        { url.append("https://www.thebluealliance.com/api/v3/event/"); }
-        
-
-    std::string inputEventKey;
-    if ( type == "team" )
-        { url.append("/event/"); }
-    std::cout << "Enter your event code: ";
-    std::cin >> inputEventKey;
-    url.append(inputEventKey);
-    url.append("/matches/simple");
-
+    
+    else if ( requestType == "all" )
+        { 
+            url.append("https://www.thebluealliance.com/api/v3/event/"); 
+            url.append(eventKey);
+            url.append("/matches/simple");
+        }
+    
     return url;
 }
 
@@ -181,8 +224,9 @@ int main()
     std::string url;
     std::string* urlPtr = &url;
     std::string teamNum;
+    
 
-    inputRequestUrl(url, teamNum);
+    getUrl(url, teamNum); //This function modifies the team number.
     request(url);
     json data = json::parse(readBuffer);
 
@@ -196,7 +240,7 @@ int main()
                 { std::cout << "\n" << data.at("Error"); }
 
             url.clear();
-            inputRequestUrl(url, teamNum); 
+            getUrl(url, teamNum); 
             readBuffer.clear();
             request(url);
             data = json::parse(readBuffer);
