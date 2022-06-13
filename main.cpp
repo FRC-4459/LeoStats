@@ -227,7 +227,6 @@ int main()
     
 
     getUrl(url, teamNum); //This function modifies the team number.
-    request(url);
     json data = json::parse(readBuffer);
 
     while ( true )

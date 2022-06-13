@@ -1,6 +1,6 @@
 .vscode/
 authkey.h
-main.e
+ui/
 
 # C++ objects and libs
 *.slo
