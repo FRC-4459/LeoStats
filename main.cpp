@@ -1,21 +1,13 @@
-//#include "mainwindow.h"
-
-//#include <QApplication>
-
-//int main(int argc, char *argv[])
-//{
-//    QApplication a(argc, argv);
-//    MainWindow w;
-//    w.show();
-//    return a.exec();
-//}
-
-#include <iostream>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <json.hpp>
-#include <curl/curl.h>
+#include <curl.h>
+
+#include "mainwindow.h"
+#include <QApplication>
+#include <QPushButton>
 
 #include "authkey.h"
 
@@ -103,6 +95,7 @@ class game
         std::string matchType {"N/A"};
 
         template <typename T>
+
         void grabFromJSON(T &var, nlohmann::json value)
         {
             if ( value.is_null() || value.empty() )
@@ -188,8 +181,6 @@ class game
 
             cout << "\n\n";
         }
-
-
 };
 
 std::string getUrl(std::string &url, std::string &teamNum)
@@ -226,7 +217,7 @@ std::string getUrl(std::string &url, std::string &teamNum)
     return url;
 }
 
-int main()
+int main(int argc, char **argv)
 {
     using json = nlohmann::json;
 
@@ -270,7 +261,19 @@ int main()
     for ( unsigned long i{0}; i < games.size(); i++ )
         { games.at(i).print(); }
 
-    // std::cout << "\n\n\n" << readBuffer << "\n\n\n";
+    std::cout << "\n\n\n" << readBuffer << "\n\n\n";
 
-    return 0;
+    QApplication app(argc, argv);
+
+    QPushButton button ("Hello World !");
+    button.setToolTip("Tooltip");
+    button.show();
+
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+    return a.exec();
+
+
+    return app.exec();
 }

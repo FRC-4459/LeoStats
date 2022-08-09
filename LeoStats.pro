@@ -8,18 +8,17 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += /home/kingstonv/libraries/
-INCLUDEPATH += /usr/include/curl/
+INCLUDEPATH += /usr/include/curl
+LIBS += -L/usr/include/curl -lcurl
 
 SOURCES += \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
-    mainwindow.h \
-    authkey.h \
     json.hpp \
-    curl.h
+    mainwindow.h \
+    authkey.h
 
 FORMS += \
     mainwindow.ui
