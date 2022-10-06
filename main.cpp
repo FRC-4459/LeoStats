@@ -12,8 +12,8 @@
 class game;
 
 /* TODO:
-Expected time handling
-Sorting the matches by comp level, then match number
+    Expected time handling
+    Sorting the matches by comp level, then match number
 */
 
 nlohmann::json data;
@@ -23,14 +23,14 @@ std::string getUrl(std::string &url, std::string &teamNum)
 {
 
     std::string requestType {"team"};
-    std::cout << "All matches or those for your team: ";
+    std::cout << "Would you like all matches or only those your team participates in? enter all/team  ";
     std::cin >> requestType;
 
-    std::cout << "Enter your team number: ";
+    std::cout << "Enter your FRC team number: ";
     std::cin >> teamNum;
 
     std::string eventKey;
-    std::cout << "Enter your event code: ";
+    std::cout << "Enter a valid TBA event code: ";
     std::cin >> eventKey;
 
     if ( requestType == "team" )
@@ -69,24 +69,19 @@ int main(int argc, char **argv)
     request(url, readBuffer);
     json data = json::parse(readBuffer);
 
-    while ( true )
+    
+    while (data.empty() || data.contains("Error"))
     {
-        if ( data.empty() || data.contains("Error")  )
-        {
-            if ( data.empty() )
-                { std::cout << "\nNo results found. Maybe your search was faulty?\n"; }
-            else if ( data.contains("Error") )
-                { std::cout << "\n" << data.at("Error"); }
+        if ( data.empty() )
+            { std::cout << "\nNo results found. Maybe your search was faulty?\n"; }
+        else if ( data.contains("Error") )
+            { std::cout << "\n" << data.at("Error"); }
 
-            url.clear();
-            getUrl(url, teamNum);
-            readBuffer.clear();
-            request(url, readBuffer);
-            data = json::parse(readBuffer);
-        }
-
-        else
-            { break; }
+        url.clear();
+        getUrl(url, teamNum);
+        readBuffer.clear();
+        request(url, readBuffer);
+        data = json::parse(readBuffer);
     }
 
     for ( unsigned int i{0}; i < data.size(); i++ )
@@ -96,6 +91,7 @@ int main(int argc, char **argv)
         games.push_back(currentGame);
     }
 
+    std::cout << "\n";
     for ( unsigned long i{0}; i < games.size(); i++ )
         { games.at(i).print(); }
 }
