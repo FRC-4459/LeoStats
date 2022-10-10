@@ -53,7 +53,7 @@ std::string getUrl(std::string &url, std::string &teamNum)
     return url;
 }
 
-int main(int argc, char **argv)
+int main()
 {
     using json = nlohmann::json;
 
