@@ -29,15 +29,15 @@ class game
         std::string setType(std::string type)
         {
             if ( type == "qm" )
-                { return "Qualifier"; }
+                return "Qualifier";
             else if ( type == "ef" )
-                { return "Elimination"; }
+                return "Elimination";
             else if ( type == "qf" )
-                { return "Quarterfinal"; }
+                return "Quarterfinal";
             else if ( type == "sf" )
-                { return "Semifinal"; }
+                return "Semifinal";
             else if ( type == "f" )
-                { return "Final"; }
+                return "Final";
             return "N/A";
         }
 

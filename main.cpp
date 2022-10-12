@@ -8,6 +8,10 @@
 #include "authkey.h"
 #include "request.cpp"
 #include "game.cpp"
+#include "mainwindow.h"
+
+#include <QApplication>
+
 
 class game;
 
@@ -34,42 +38,28 @@ std::string getUrl(std::string &url, std::string &teamNum)
     std::cin >> eventKey;
 
     if ( requestType == "team" )
-        {
-            url.append("https://www.thebluealliance.com/api/v3/team/");
-            url.append("frc");
-            url.append(teamNum);
-            url.append("/event/");
-            url.append(eventKey);
-            url.append("/matches/simple");
-        }
+        url.append("https://www.thebluealliance.com/api/v3/team/frc" + teamNum + "/event/" + eventKey + "/matches/simple");
 
     else if ( requestType == "all" )
-        {
-            url.append("https://www.thebluealliance.com/api/v3/event/");
-            url.append(eventKey);
-            url.append("/matches/simple");
-        }
+        url.append("https://www.thebluealliance.com/api/v3/event/" + eventKey + "/matches/simple");
 
     return url;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     using json = nlohmann::json;
 
     std::vector<game> games;
     game currentGame;
 
-    std::string readBuffer;
-    std::string url;
-    std::string teamNum;
-
+    std::string readBuffer, url, teamNum;
 
     getUrl(url, teamNum); //This function modifies the team number.
     request(url, readBuffer);
     json data = json::parse(readBuffer);
 
-    
+
     while (data.empty() || data.contains("Error"))
     {
         if ( data.empty() )
@@ -94,4 +84,12 @@ int main()
     std::cout << "\n";
     for ( unsigned long i{0}; i < games.size(); i++ )
         { games.at(i).print(); }
+
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.setFixedSize(1000, 600);
+    w.show();
+
+    return a.exec();
+
 }
