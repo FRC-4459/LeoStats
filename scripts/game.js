@@ -7,3 +7,5 @@ class game
     red = [0, 0, 0];
     matchType = 'N/A';
 }
+
+export default game;

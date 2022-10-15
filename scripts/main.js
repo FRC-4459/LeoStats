@@ -1,4 +1,4 @@
-import { get } from 'axios.js';
-import { game } from 'game.js';
+import Axios from 'axios';
+import game from './game.js';
 
-get('https://api.sampleapis.com/switch/games').then((res) => console.log(res)).catch((err) => console.err(err));
+Axios.get('https://api.sampleapis.com/switch/games').then((res) => console.log(res)).catch((err) => console.err(err));
