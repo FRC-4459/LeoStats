@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <!-- remove arrows by number input field -->
     <style>
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
@@ -15,14 +16,12 @@
     </style>
 
     <title>LeoStats Web</title>
-    <meta name="description" content="A quick dashboard for FRC teams" />
+    <meta name="description" content="A quick dashboard for FRC teams"/>
 
 </head>
 
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
-    <script type="module" src="scripts/main.js"></script>
-
+    
     <div id="inputArea">        
         <div>
             <p1>Enter your team number: </p1>
@@ -32,12 +31,15 @@
             <p1>Enter your TBA event code: </p1>
             <input type="text" maxlength="16" id="eventCode"></input>
         </div>
+        <button type="button" id="submitButton">Submit</button>
     </div>
-
+    
     <div id="infoArea" style="overflow:auto; height:400px; width:800px; background-color:grey;">
     </div>
-
-
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script type="module" src="scripts/main.js"></script>
 </body>
 
 
