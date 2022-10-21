@@ -2,16 +2,42 @@
 <html lang="en">
 
 <head>
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+
     <title>LeoStats Web</title>
-    <meta name="description" content="A quick dashboard for FRC teams"/>
-    
+    <meta name="description" content="A quick dashboard for FRC teams" />
+
 </head>
 
 <body>
-    <div id="nameForm"></div>
-    
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
     <script type="module" src="scripts/main.js"></script>
+
+    <div id="inputArea">        
+        <div>
+            <p1>Enter your team number: </p1>
+            <input type="number" maxlength="4" id="teamNum">
+        </div>
+        <div>
+            <p1>Enter your TBA event code: </p1>
+            <input type="text" maxlength="16" id="eventCode"></input>
+        </div>
+    </div>
+
+    <div id="infoArea" style="overflow:auto; height:400px; width:800px; background-color:grey;">
+    </div>
+
+
 </body>
 
 
