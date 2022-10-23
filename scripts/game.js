@@ -9,14 +9,17 @@ class game
 
     isParticipating(teamNum) {
         for (let i = 0; i < 2; i++) { 
-            if (blue[i].search(teamNum) != -1) 
+            if (this.blue[i].search(teamNum) != -1) 
                 { return "blue"; }
-            if (red[i].search(teamNum) != -1) 
+            if (this.red[i].search(teamNum) != -1) 
                 { return "red"; }
         }
 
         return "none";
     }
+
+    print()
+        { console.log(this); }
 
 }
 
