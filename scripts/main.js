@@ -14,11 +14,11 @@ async function createGames() {
         currentGame.red = res.data[i].alliances.red.team_keys;
         currentGame.userTeam = currentGame.isParticipating(teamNum);
         
-        currentGame.print();
+        games.push(currentGame)
     }
 
-};
+    return games;
 
-//console.log("Actual Time: " + res.data[0].actual_time)
+};
 
 document.getElementById("submitButton").addEventListener("click", createGames);
