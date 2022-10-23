@@ -4,6 +4,7 @@ require("dotenv").config()
 
 const host = 'localhost';
 const port = 8000;
+let count = 0;
 
 const headers = {headers: {"X-TBA-Auth-Key":process.env.authkey, "accept":"application/json"}}
 
@@ -13,17 +14,11 @@ const requestListener = async function (req, res)
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, X-TBA-Auth-Key, accept, Access-Control-Allow-Origin');
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    
-    let output = "";
 
     let r = await axios.get("https://www.thebluealliance.com/api/v3/team/frc4459/event/2022gacar/matches/simple", headers);
-    
-    //Data is an array of JSON objects; iterate through it.
-    for (let i = 0; i < r.data.length; i++) 
-        { output += JSON.stringify(r.data[i]); output += ","; }
-        output.slice(0, -1)
-
-    res.end(output);
+    res.end(JSON.stringify(r.data));
+    count++;
+    console.log(`Request #${count} Fulfilled.`)
 };
 
 const server = http.createServer(requestListener);
