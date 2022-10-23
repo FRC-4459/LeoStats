@@ -1,6 +1,5 @@
 const http = require("http");
 const axios = require("axios");
-const fs = require("fs");
 require("dotenv").config()
 
 const host = 'localhost';
@@ -13,7 +12,7 @@ const requestListener = async function (req, res)
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, X-TBA-Auth-Key, accept, Access-Control-Allow-Origin');
-    res.writeHead(200);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     
     let output = "";
 
@@ -21,9 +20,10 @@ const requestListener = async function (req, res)
     
     //Data is an array of JSON objects; iterate through it.
     for (let i = 0; i < r.data.length; i++) 
-        { output += JSON.stringify(r.data[i], null, 4); }
-    
-    res.end(output)
+        { output += JSON.stringify(r.data[i]); output += ","; }
+        output.slice(0, -1)
+
+    res.end(output);
 };
 
 const server = http.createServer(requestListener);
