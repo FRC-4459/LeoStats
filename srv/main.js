@@ -15,7 +15,7 @@ const requestListener = async function (req, res)
     res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, X-TBA-Auth-Key, accept, Access-Control-Allow-Origin');
     res.writeHead(200, { 'Content-Type': 'application/json' });
 
-    let r = await axios.get("https://www.thebluealliance.com/api/v3/team/frc4459/event/2022gacar/matches/simple", headers);
+    let r = await axios.get("https://www.thebluealliance.com/api/v3/event/2022gacar/matches/simple", headers);
     res.end(JSON.stringify(r.data));
     count++;
     console.log(`Request #${count} Fulfilled.`)
