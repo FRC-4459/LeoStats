@@ -4,6 +4,16 @@
 <head>
     <!-- remove arrows by number input field -->
     <style>
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -13,17 +23,21 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
-        p1 { color: white; }
+
+        p1 {
+            color: white;
+        }
     </style>
 
+    <link rel="icon" type="image/x-icon" href="./static/img/Leotechs Logo.png">
     <title>LeoStats Web</title>
-    <meta name="description" content="A quick dashboard for FRC teams"/>
+    <meta name="description" content="A quick dashboard for FRC teams" />
 
 </head>
 
 <body style="background-color:#181a1b;">
-    
-    <div id="inputArea">        
+
+    <div id="inputArea">
         <div>
             <p1>Enter your team number: </p1>
             <input type="number" maxlength="4" id="teamNum">
@@ -34,15 +48,16 @@
         </div>
         <button type="button" id="submitButton">Submit</button>
     </div>
-    
+
     <div id="infoArea" style="overflow:auto; height:400px; width:800px; background-color:grey; margin: auto;">
+        <div id="loader"></div>
     </div>
-    
+
     <script src="https://unpkg.com/react@16.7.0/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16.7.0/umd/react-dom.development.js"></script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
-    <script type="module" src="scripts/main.js"></script>
+    <script type="module" src="scripts/compiled/main.js"></script>
 </body>
 
 
