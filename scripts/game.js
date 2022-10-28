@@ -9,9 +9,9 @@ class game
 
     isParticipating(teamNum) {
         for (let i = 0; i < 2; i++) { 
-            if (this.blue[i].search(teamNum) != -1) 
+            if (this.blue[i] === parseInt(teamNum)) 
                 { return "blue"; }
-            if (this.red[i].search(teamNum) != -1) 
+            if (this.red[i] === parseInt(teamNum)) 
                 { return "red"; }
         }
 

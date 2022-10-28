@@ -3,24 +3,27 @@ import game from './game.js';
 async function createGames() {
     let teamNum = document.getElementById("teamNum").value;
     let eventCode = document.getElementById("eventCode").value;
-    let res = await axios.get("http://localhost:8000");
+    let res = await axios.get(`http://localhost:8000/events/byTeam?teamNum=${teamNum}&eventCode=${eventCode}`);
     let games = [];
 
-    console.log(res);
-
-    // for (let i = 0; i < res.data.length; i++) { 
-    //     let currentGame = new game;
-    //     currentGame.matchTime = res.data[i].actual_time;
-    //     currentGame.matchNumber = res.data[i].match_number;
-    //     currentGame.blue = res.data[i].alliances.blue.team_keys;
-    //     currentGame.red = res.data[i].alliances.red.team_keys;
-    //     currentGame.userTeam = currentGame.isParticipating(teamNum);
+    for (let i = 0; i < res.data.length; i++) { 
+        let currentGame = new game;
+        currentGame.matchTime = res.data[i].autoStartTime;
+        currentGame.matchNumber = res.data[i].matchNumber;
         
+        for (let l = 0; l < res.data[i].teams.length; l++) {
+            if (l < 3) { 
+                currentGame.red[l] = res.data[i].teams[l].teamNumber }
+            else { 
+                currentGame.blue[l - 3]  = res.data[i].teams[l].teamNumber }
+        }
         
-    //     games.push(currentGame)
-    // }
+        currentGame.userTeam = currentGame.isParticipating(teamNum);
+        console.log(currentGame);
+        games.push(currentGame)
+    }
     
-    // console.log(`Got ${games.length} games from ${eventCode}.`)
+    console.log(`Got ${games.length} games from ${eventCode}.`)
     return games;
 };
 
