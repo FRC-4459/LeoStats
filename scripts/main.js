@@ -1,9 +1,10 @@
 import game from './game.js';
 
-//Recompile this. Do it again.
+function renderGameDiv(game) {
+    
+}
+
 async function createGames() {
-    
-    
     let teamNum = document.getElementById("teamNum").value;
     let eventCode = document.getElementById("eventCode").value;
     let res = await axios.get(`http://localhost:8000/events/byTeam?teamNum=${teamNum}&eventCode=${eventCode}`);
@@ -25,11 +26,9 @@ async function createGames() {
         games.push(currentGame)
     }
     
-    console.log(games);
     console.log(`Got ${games.length} games from ${eventCode}.`)
     return games;
-
-
 };
 
 document.getElementById("submitButton").addEventListener("click", createGames);
+
