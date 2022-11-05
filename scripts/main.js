@@ -1,7 +1,20 @@
 import game from './game.js';
 
+let gameTemp = document.getElementById("gameTemp");
+let infoArea = document.getElementById("infoArea");
+
 function renderGameDiv(game) {
+    let newGame = gameTemp.content.cloneNode(true);
+    let gameDiv = newGame.childNodes.item(1);
+    let blueTeam = gameDiv.childNodes.item(1);
     
+    console.log(blueTeam.childNodes);
+
+    for (let i = 0; i < 3; i++) {
+        blueTeam.childNodes.item((4 * i) + 1).innerText = game.blue[i];
+    }
+
+    infoArea.appendChild(newGame);
 }
 
 async function createGames() {
@@ -23,12 +36,16 @@ async function createGames() {
         }
         
         currentGame.userTeam = currentGame.isParticipating(teamNum);
-        games.push(currentGame)
+        games.push(currentGame);
     }
     
     console.log(`Got ${games.length} games from ${eventCode}.`)
+
+    for (let i = 0; i < games.length; i++) {
+        renderGameDiv(games[i]);
+    }
+    console.log("Rendered Divs.");
     return games;
 };
 
 document.getElementById("submitButton").addEventListener("click", createGames);
-

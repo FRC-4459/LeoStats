@@ -27,6 +27,11 @@
         p1 {
             color: white;
         }
+
+        p2 {
+            margin-top: 1;
+            margin-bottom: 1;
+        }
     </style>
 
     <link rel="icon" type="image/x-icon" href="./static/img/Leotechs Logo.png">
@@ -53,8 +58,25 @@
         <div id="loader"></div>
     </div>
 
+    <template id="gameTemp">
+        <div id="gameDiv" style="display: flex; flex-direction: column; background-color:white; border: 2px solid red;">
+            <div id="blueTeam" style="margin-left: 0; margin-right: 0;">
+                left
+                <p2 id="blue1">0001</p2> <br>
+                <p2 id="blue2">0002</p2> <br>
+                <p2 id="blue3">0003</p2>
+            </div>
+            <div id="redTeam" style="margin-left: auto; margin-right: 0;">
+                right
+                <p2 id="red1">0001</p2> <br>
+                <p2 id="red2">0002</p2> <br>
+                <p2 id="red3">0003</p2>
+            </div>
+        </div>
+    </template>
+
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
-    <script type="module" src="scripts/main.js"></script>
+    <script type="module" src="./scripts/main.js"></script>
 </body>
 
 
