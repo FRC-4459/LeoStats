@@ -2,72 +2,42 @@
 <html lang="en">
 
 <head>
-    <!-- remove arrows by number input field -->
-    <style>
-        .loader {
-            border: 16px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 16px solid #3498db;
-            width: 120px;
-            height: 120px;
-            -webkit-animation: spin 2s linear infinite;
-            animation: spin 2s linear infinite;
-        }
-
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
-
-        p1 {
-            color: white;
-        }
-
-        p2 {
-            margin-top: 1;
-            margin-bottom: 1;
-        }
-    </style>
+    <link rel="stylesheet" href="./styles.css">    
+    <meta charset="UTF-8">
 
     <link rel="icon" type="image/x-icon" href="./static/img/Leotechs Logo.png">
     <title>LeoStats Web</title>
+    
     <meta name="description" content="A quick dashboard for FRC teams" />
-
+    <meta name="author" content="Kingston Vastine">
 </head>
 
 <body style="background-color:#181a1b;">
 
     <div id="inputArea">
         <div>
-            <p1>Enter your team number: </p1>
-            <input type="number" maxlength="4" id="teamNum">
+            <input type="number" maxlength="4" id="teamNum" placeholder="Team Number">
         </div>
         <div>
-            <p1>Enter your TBA event code: </p1>
-            <input type="text" maxlength="16" id="eventCode"></input>
+
+            <input type="text" maxlength="16" id="eventCode" placeholder="TBA Event Code"></input>
         </div>
+
         <button type="button" id="submitButton">Submit</button>
     </div>
 
-    <div id="infoArea" style="overflow:auto; height:400px; width:800px; background-color:grey; margin: auto;">
+    <div id="infoArea" class="infoArea">
         <div id="loader"></div>
     </div>
 
     <template id="gameTemp">
-        <div id="gameDiv" style="display: flex; flex-direction: column; background-color:white; border: 2px solid red;">
-            <div id="blueTeam" style="margin-left: 0; margin-right: 0;">
-                left
+        <div id="gameDiv" class="gameDiv">
+            <div id="blueTeam">
                 <p2 id="blue1">0001</p2> <br>
                 <p2 id="blue2">0002</p2> <br>
                 <p2 id="blue3">0003</p2>
             </div>
-            <div id="redTeam" style="margin-left: auto; margin-right: 0;">
-                right
+            <div id="redTeam">
                 <p2 id="red1">0001</p2> <br>
                 <p2 id="red2">0002</p2> <br>
                 <p2 id="red3">0003</p2>
