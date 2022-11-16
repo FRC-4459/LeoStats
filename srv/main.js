@@ -25,12 +25,12 @@ const requestListener = async function (req, res)
     let params = url.parse(req.url, true);
     
     switch (params.pathname) {
-        case "/events/byTeam":
+        case "/events":
             season = params.query.eventCode.substring(0, 4);
             eventCode = params.query.eventCode.substring(4, params.query.eventCode.substring.end);
             
             let r = await axios.get(
-            `https://frc-api.firstinspires.org/v3.0/2022/matches/GACAR`, headers)
+            `https://frc-api.firstinspires.org/v3.0/${season}/matches/${eventCode.toUpperCase()}`, headers)
             .catch(function (error) {console.log(error.message)});
 
             //r is an object of json objects; convert it to a string
