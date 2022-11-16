@@ -21,16 +21,57 @@ input[type=number] {
 }
 
 .infoArea {
-    overflow:auto; 
-    height:400px; 
-    width:800px; 
+    overflow: auto; 
+    height: 400px; 
+    width: 804px; 
     background-color:grey; 
+    border: 6px solid black;
     margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.gameDiv {
-    background-color: whitesmoke;
-    border: 3px solid black;
+.gameContainer {
+    flex-grow: 1;
+    width: 100%;
+    max-height: 90px;
+}
+
+.blueTeam {
+    background-color: aqua;
+    border-right: 2px solid black;
+    width: 392px;
+    height: 100%;
+    float: left;
+    border-bottom: 4px solid black;
+}
+
+.redTeam {
+    background-color: pink;
+    border-left: 2px solid black;
+    width: 392px;
+    height: 100%;
+    float: left;
+    border-bottom: 4px solid black;
+}
+
+.gameHead {
+    background-color: grey;
+    border-bottom: 4px solid black;
+    border-top: 4px solid black;
+    width: 100%;
+    height: auto;
+    text-align: center;
+}
+
+.gameHead h1 {
+    color: white;
+    font-size: 20px;
+    font-display: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0px;
+    letter-spacing: 4px;
 }
 
 p1 {
