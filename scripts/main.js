@@ -36,21 +36,30 @@ async function createGames() {
         };
 
 function renderGameDiv(game) {
-    let newGame = gameTemp.content.cloneNode(true);
-    let gameDiv = newGame.childNodes.item(1);
-    let blueTeam = gameDiv.childNodes.item(1);
-    //let redTeam = gameDiv.childNodes.item(5);
+    let newGame = $(gameTemp).clone();
+    let gameDiv = $(newGame.contents()[1]);
+    let blueTeam = $(gameDiv.contents()[1]);
+    let redTeam = $(gameDiv.contents()[3]);
 
-    if (game.isParticipating === "blue") {
-        
-    }
+    switch (game.userTeam) {
+        case "blue":
+            gameDiv.css("background-color", "aquamarine");
+            break;
+        case "red":
+            gameDiv.css("background-color", "pink");
+            break;
+        default:
+            gameDiv.css("background-color", "grey");
+            break;
+    };
     
     for (let i = 0; i < 3; i++) {
-        blueTeam.childNodes.item((4 * i) + 1).innerText = game.blue[i];
-        //redTeam.childNodes.item((4 * i) + 1).innerText = game.red[i];
+        blueTeam.children()[i * 2].innerHTML = game.blue[i];
+        redTeam.children()[i * 2].innerHTML = game.red[i];
     }
 
-    infoArea.appendChild(newGame);
+    infoArea.appendChild(gameDiv.get(0));
 }
 
-        document.getElementById("submitButton").addEventListener("click", createGames);
+$(submitButton).on("click", createGames);
+
