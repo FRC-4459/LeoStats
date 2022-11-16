@@ -4,11 +4,38 @@ let gameTemp = $(gameTempl);
 let infoArea = $(infoAreaDiv);
 
 function sortGames(games) {
+    let qualifiers = [];
+    let quarterfinals = [];
+    let semifinals = [];
+    let finals = [];
 
+    for (let i = 0; i < games.length; i++) {
+        const split = games[i].description.split(' ')
+        
+        switch (split[0]) {
+            case 'Qualification':
+                qualifiers.push(games[i]);
+                break;
+            case 'Quarterfinal':
+                quarterfinals.push(games[i]);
+                break;
+            case 'Semifinal':
+                semifinals.push(games[i]);
+                break;
+            case 'Final':
+                finals.push(games[i]);
+                break;
+            default:
+                break;
+        }
 
+    }
 
+    let qq = qualifiers.concat(quarterfinals);
+    let sf = semifinals.concat(finals);
+    games = qq.concat(sf);
 
-
+    console.log(games);
     return games;
 }
 
@@ -44,7 +71,7 @@ async function createGames() {
     console.log(`Sorthed ${games.length} games.`)
 
     for (let i = 0; i < games.length; i++) 
-        { renderGameDiv(games[i]); console.log(games[i].description); }
+        { renderGameDiv(games[i]); }
 
     console.log("Rendered Divs.");
     return games;
@@ -53,15 +80,19 @@ async function createGames() {
 function renderGameDiv(game) {
     let newGame = $(gameTemp).clone();
     let gameContainer = $(newGame.contents()[1]);
+    let gameHead = $(gameContainer.contents()[1]);
     let blueTeam = $(gameContainer.contents()[3]);
     let redTeam = $(gameContainer.contents()[5]);
 
-    
+    console.log(gameHead.contents());
+
     for (let i = 0; i < 3; i++) {
         //The h1 elements we want occur at 1, 5, and 9 in the parent element,
         //So we must multiply the index by 4, then add 1.
         $(blueTeam.contents()[(i * 4) + 1]).text(game.blue[i]);
         $(redTeam.contents()[(i * 4) + 1]).text(game.red[i]);
+
+        $(gameHead.contents()[0]).text(game.description);
     }
 
     infoArea.append(gameContainer.get(0));
