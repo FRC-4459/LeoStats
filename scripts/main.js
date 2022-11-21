@@ -35,7 +35,6 @@ function sortGames(games) {
     let sf = semifinals.concat(finals);
     games = qq.concat(sf);
 
-    console.log(games);
     return games;
 }
 
@@ -68,7 +67,7 @@ async function createGames() {
     
     games = sortGames(games);
 
-    console.log(`Sorthed ${games.length} games.`)
+    console.log(`Sorted ${games.length} games.`)
 
     for (let i = 0; i < games.length; i++) 
         { renderGameDiv(games[i]); }
@@ -84,8 +83,7 @@ function renderGameDiv(game) {
     let blueTeam = $(gameContainer.contents()[3]);
     let redTeam = $(gameContainer.contents()[5]);
 
-    console.log(gameHead.contents());
-
+    
     for (let i = 0; i < 3; i++) {
         //The h1 elements we want occur at 1, 5, and 9 in the parent element,
         //So we must multiply the index by 4, then add 1.
@@ -99,6 +97,3 @@ function renderGameDiv(game) {
 }
 
 $(submitButton).on("click", createGames);
-let newGame = $(gameTemp).clone();
-let gameDiv = $(newGame.contents()[1])
-infoArea.append(gameDiv.get(0));

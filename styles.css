@@ -56,6 +56,20 @@ input[type=number] {
     border-bottom: 4px solid black;
 }
 
+.redTeam p {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    display: inline-block;
+    font-family: 'Fragment Mono';
+}
+
+.blueTeam p {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    display: inline-block;
+    font-family: 'Fragment Mono';
+}
+
 .gameHead {
     background-color: grey;
     border-bottom: 4px solid black;
@@ -69,16 +83,11 @@ input[type=number] {
     color: white;
     font-size: 20px;
     font-display: bold;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Fragment Mono';
     margin: 0px;
     letter-spacing: 4px;
 }
 
 p1 {
     color: white;
-}
-
-p2 {
-    margin-top: 1;
-    margin-bottom: 1;
 }
