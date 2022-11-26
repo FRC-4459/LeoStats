@@ -3,20 +3,16 @@ const axios = require("axios");
 const url = require("url");
 require("dotenv").config()
 
-const host = 'localhost';
 const port = 8000;
 let count = 0;
-
-const headers = {headers: {"Authorization": `Basic ${process.env.auth}`}};
 
 function cleanUp (params) {
     count++;
     console.log(`Fulfilled request #${count} of type ${params.pathname}.`);
-};
+}
 
 const requestListener = async function (req, res) 
 {
-try {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, X-TBA-Auth-Key, accept, Access-Control-Allow-Origin');
@@ -24,11 +20,11 @@ try {
     
     let headers = {headers: {"Authorization": `Basic ${process.env.auth}`}};
     let params = url.parse(req.url, true);
-    
+try {
     switch (params.pathname) {
-        case "/events":
-            season = params.query.eventCode.substring(0, 4);
-            eventCode = params.query.eventCode.substring(4, params.query.eventCode.substring.end);
+        case "/events": {
+            let season = params.query.eventCode.substring(0, 4);
+            let eventCode = params.query.eventCode.substring(4, params.query.eventCode.substring.end);
             
             let r = await axios.get(
             `https://frc-api.firstinspires.org/v3.0/${season}/matches/${eventCode.toUpperCase()}`, headers)
@@ -45,17 +41,18 @@ try {
             out += "]";
 
             cleanUp(params);
-	    res.writeHead(200);
+            res.writeHead(200);
             res.end(out);
             break;
+        }
     
-        default:
+        default: {
             res.writeHead(400)
             res.end("Invalid request URL.");
             break;
-
-	} catch (err) {console.log(err);}
+        }
     }
+} catch (err) {console.err(err);}
 };
 
 const server = http.createServer(requestListener);
