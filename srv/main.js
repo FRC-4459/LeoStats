@@ -52,7 +52,7 @@ try {
             break;
         }
     }
-} catch (err) {console.err(err);}
+} catch (err) {console.log(err);}
 };
 
 const server = http.createServer(requestListener);
