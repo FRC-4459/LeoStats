@@ -1,8 +1,8 @@
 /* global axios */
 import game from "./game.js";
 
-let gameTemp = $("gameTempl");
-let infoArea = $("infoAreaDiv");
+let gameTemp = $(gameTempl);
+let infoArea = $(infoAreaDiv);
 
 function sortGames(games) {
 	let qualifiers = [];
@@ -40,9 +40,9 @@ function sortGames(games) {
 }
 
 async function createGames() {
-	let frcNum = $("teamNum").val();
-	let frcCode = $("eventCode").val();
-	let res = await axios.get(`http://localhost:8000/events?teamNum=${frcNum}&eventCode=${frcCode}`);
+	let frcNum = $(teamNum).val();
+	let frcCode = $(eventCode).val();
+	let res = await axios.get(`http://142.93.204.152:8000/events?teamNum=${frcNum}&eventCode=${frcCode}`);
 	let games = [];
     
 	for (let i = 0; i < res.data.length; i++) { 
@@ -97,4 +97,4 @@ function renderGameDiv(game) {
 	infoArea.append(gameContainer.get(0));
 }
 
-$("submitButton").on("click", createGames);
+$(submitButton).on("click", createGames);
