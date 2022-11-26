@@ -16,11 +16,10 @@ function cleanUp (params) {
 
 const requestListener = async function (req, res) 
 {
-try {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, X-TBA-Auth-Key, accept, Access-Control-Allow-Origin');
-    res.setHeader('Content-Type', 'application/json')
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     
     let headers = {headers: {"Authorization": `Basic ${process.env.auth}`}};
     let params = url.parse(req.url, true);
@@ -45,21 +44,18 @@ try {
             out += "]";
 
             cleanUp(params);
-	    res.writeHead(200);
             res.end(out);
             break;
     
-        default:
-            res.writeHead(400)
+	        default:
+            res.status(400);
             res.end("Invalid request URL.");
             break;
-
-	} catch (err) {console.log(err);}
     }
 };
 
 const server = http.createServer(requestListener);
-server.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+server.listen(port, host, () => {
+    console.log(`Server is running on http://${host}:${port}`);
 });
 
