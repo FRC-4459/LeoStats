@@ -6,18 +6,20 @@ require("dotenv").config()
 const port = 8000;
 let count = 0;
 
+const headers = {headers: {"Authorization": `Basic ${process.env.auth}`}};
+
 function cleanUp (params) {
     count++;
     console.log(`Fulfilled request #${count} of type ${params.pathname}.`);
 }
 
-const requestListener = async function (req, res) 
+const requestListener = async function (req, res)
 {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, X-TBA-Auth-Key, accept, Access-Control-Allow-Origin');
     res.setHeader('Content-Type', 'application/json')
-    
+
     let headers = {headers: {"Authorization": `Basic ${process.env.auth}`}};
     let params = url.parse(req.url, true);
 try {
@@ -25,7 +27,7 @@ try {
         case "/events": {
             let season = params.query.eventCode.substring(0, 4);
             let eventCode = params.query.eventCode.substring(4, params.query.eventCode.substring.end);
-            
+
             let r = await axios.get(
             `https://frc-api.firstinspires.org/v3.0/${season}/matches/${eventCode.toUpperCase()}`, headers)
             .catch(function (error) {console.log(error.message)});
@@ -45,7 +47,7 @@ try {
             res.end(out);
             break;
         }
-    
+
         default: {
             res.writeHead(400)
             res.end("Invalid request URL.");
