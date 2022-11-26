@@ -1,6 +1,7 @@
 const http = require("http");
 const axios = require("axios");
 const url = require("url");
+const fs = require('fs')
 require("dotenv").config();
 
 const port = 8000;
@@ -18,7 +19,9 @@ const requestListener = async function (req, res)
 	res.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, X-TBA-Auth-Key, accept, Access-Control-Allow-Origin");
 	res.setHeader("Content-Type", "application/json");
     
+	
 	let params = url.parse(req.url, true);
+	
 	try {
 		switch (params.pathname) {
 		case "/events": {
@@ -45,6 +48,13 @@ const requestListener = async function (req, res)
 			cleanUp(params);
 			res.writeHead(200);
 			res.end(out);
+			break;
+		}
+
+		case "/": {
+			console.log("Got request to base url.");
+			res.writeHead(200, {'content-type': 'text/html'});
+			fs.createReadStream('../index.html').pipe(res);
 			break;
 		}
 
