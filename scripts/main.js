@@ -42,7 +42,7 @@ function sortGames(games) {
 async function createGames() {
 	let frcNum = $(teamNum).val();
 	let frcCode = $(eventCode).val();
-	let res = await axios.get(`http://142.93.204.152:8000/events?teamNum=${frcNum}&eventCode=${frcCode}`);
+	let res = await axios.get(`http://localhost:8000/events?teamNum=${frcNum}&eventCode=${frcCode}`);
 	let games = [];
     
 	for (let i = 0; i < res.data.length; i++) { 
@@ -71,13 +71,13 @@ async function createGames() {
 	console.log(`Sorted ${games.length} games.`);
 
 	for (let i = 0; i < games.length; i++) 
-	{ renderGameDiv(games[i]); }
+	{ renderGameDiv(games[i], frcNum); }
 
 	console.log("Rendered Divs.");
 	return games;
 }
 
-function renderGameDiv(game) {
+function renderGameDiv(game, frcNum) {
 	let newGame = $(gameTemp).clone();
 	let gameContainer = $(newGame.contents()[1]);
 	let gameHead = $(gameContainer.contents()[1]);
@@ -86,10 +86,21 @@ function renderGameDiv(game) {
 
     
 	for (let i = 0; i < 3; i++) {
-		//The h1 elements we want occur at 1, 5, and 9 in the parent element,
+		//The anchor elements we want occur at 1, 5, and 9 in the parent element,
 		//So we must multiply the index by 4, then add 1.
 		$(blueTeam.contents()[(i * 4) + 1]).text(game.blue[i]);
+		$(blueTeam.contents()[(i * 4) + 1]).attr("href", `https://www.thebluealliance.com/team/${game.blue[i]}`);
 		$(redTeam.contents()[(i * 4) + 1]).text(game.red[i]);
+		$(redTeam.contents()[(i * 4) + 1]).attr("href", `https://www.thebluealliance.com/team/${game.red[i]}`);
+		
+		//If the team is your team, highlight the number
+		
+		if (game.blue[i] == frcNum) {
+			$(blueTeam.contents()[(i * 4) + 1]).css("font-weight", "800");
+		}
+		if (game.red[i] == frcNum) {
+			$(redTeam.contents()[(i * 4) + 1]).css("font-weight", "800");
+		}
 
 		$(gameHead.contents()[0]).text(game.description);
 	}

@@ -42,7 +42,7 @@ input[type=number] {
     background-color: aqua;
     border-right: 2px solid black;
     width: 392px;
-    height: 100%;
+    height: 65%;
     float: left;
     border-bottom: 4px solid black;
 }
@@ -51,23 +51,28 @@ input[type=number] {
     background-color: pink;
     border-left: 2px solid black;
     width: 392px;
-    height: 100%;
+    height: 65%;
     float: left;
     border-bottom: 4px solid black;
 }
 
-.redTeam p {
+.redTeam a {
     margin-top: 0px;
     margin-bottom: 0px;
     display: inline-block;
     font-family: 'Fragment Mono';
+    text-decoration: none;
+    color: black;
 }
 
-.blueTeam p {
+.blueTeam a {
     margin-top: 0px;
     margin-bottom: 0px;
     display: inline-block;
     font-family: 'Fragment Mono';
+    text-decoration: none;
+    color: black;
+    
 }
 
 .gameHead {
@@ -87,6 +92,8 @@ input[type=number] {
     margin: 0px;
     letter-spacing: 4px;
 }
+
+
 
 p1 {
     color: white;
