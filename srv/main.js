@@ -1,7 +1,7 @@
 const http = require("http");
 const axios = require("axios");
 const url = require("url");
-const fs = require('fs')
+const fs = require("fs");
 require("dotenv").config();
 
 const port = 8000;
@@ -19,7 +19,6 @@ const requestListener = async function (req, res)
 	res.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, X-TBA-Auth-Key, accept, Access-Control-Allow-Origin");
 	res.setHeader("Content-Type", "application/json");
     
-	
 	let params = url.parse(req.url, true);
 	
 	try {
@@ -33,7 +32,7 @@ const requestListener = async function (req, res)
 			let r = await axios.get(
 				`https://frc-api.firstinspires.org/v3.0/${season}/matches/${eventCode.toUpperCase()}`, headers)
 				.catch(function (error) {console.log(error.message);});
-
+				
 			//r is an object of json objects; convert it to a string
 			let out = "[";
 			for (let i = 0; i < r.data["Matches"].length; i++) {
@@ -53,8 +52,8 @@ const requestListener = async function (req, res)
 
 		case "/": {
 			console.log("Got request to base url.");
-			res.writeHead(200, {'content-type': 'text/html'});
-			fs.createReadStream('../index.html').pipe(res);
+			res.writeHead(200, {"content-type": "text/html"});
+			fs.createReadStream("../index.html").pipe(res);
 			break;
 		}
 
