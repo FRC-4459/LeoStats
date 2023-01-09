@@ -137,8 +137,9 @@ input[type=number] {
     font-display: bold;
     font-family: 'Fragment Mono';
     margin: 0px;
-    letter-spacing: 4px;
+    letter-spacing: 1px;
 }
+
 
 
 
