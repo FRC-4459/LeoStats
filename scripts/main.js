@@ -4,6 +4,12 @@ import game from "./game.js";
 let gameTemp = $(gameTempl);
 let infoArea = $(infoAreaDiv);
 
+//Used to shave the milliseconds off of game times
+const msRE = /\.[\d]*/
+//Used to take the timezone off of the date string after it's parsed
+
+const dtRE = /:[\d]{2}/
+
 function sortGames(games) {
 	let qualifiers = [];
 	let quarterfinals = [];
@@ -50,25 +56,30 @@ async function createGames() {
 		currentGame.matchTime = res.data[i].autoStartTime;
 		currentGame.matchNumber = res.data[i].matchNumber;
 		currentGame.description = res.data[i].description;
+		currentGame.startTime = res.data[i].actualStartTime;
         
+		try {
+			currentGame.startTime = currentGame.startTime.replace(msRE, "");
+			currentGame.startTime = Date.parse(currentGame.startTime).toString();
+			let match = dtRE.exec(currentGame.startTime);
+			currentGame.startTime.slice(match.index);
+		} catch {
+			continue;
+		}
+
 		for (let l = 0; l < res.data[i].teams.length; l++) {
         
 			if (l < 3) 
-			{ currentGame.red[l] = res.data[i].teams[l].teamNumber; }
-            
+			{ currentGame.red[l] = res.data[i].teams[l].teamNumber; } 
 			else 
 			{ currentGame.blue[l - 3]  = res.data[i].teams[l].teamNumber; }
 		}
         
-		currentGame.userTeam = currentGame.isParticipating(frcNum);
 		games.push(currentGame);
 	}
-            
-	console.log(`Got ${games.length} games from ${frcCode}.`);
     
+	console.log(`Got ${games.length} games from ${frcCode}.`);
 	games = sortGames(games);
-
-	console.log(`Sorted ${games.length} games.`);
 
 	for (let i = 0; i < games.length; i++) 
 	{ renderGameDiv(games[i], frcNum); }
@@ -109,3 +120,10 @@ function renderGameDiv(game, frcNum) {
 }
 
 $(submitButton).on("click", createGames);
+
+//Renders the games if the user hits "enter" in the code input field
+$(eventCode).on("keydown", (e) => {
+	if (e.code == "Enter") {
+		createGames();
+	}
+});
