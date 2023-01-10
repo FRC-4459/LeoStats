@@ -66,7 +66,7 @@ async function createGames() {
 		} catch {
 			continue;
 		}
-
+		
 		for (let l = 0; l < res.data[i].teams.length; l++) {
         
 			if (l < 3) 
