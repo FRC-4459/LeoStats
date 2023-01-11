@@ -43,25 +43,51 @@ function sortGames(games) {
 }
 
 function parseTime(game, time) {
-	//We have to use a try/catch block because the test games do not have a valid start time.
+	// Get the first 10 characters of the time string - this is the game date in yyyy-mm-dd format.
+	let date;
+
 	let minutes;
 	let hours;
+
+	// The variable we use for all our conditionals.
+	// Should be set to today for production, but can be changed for debugging.
+	let testingDate = Date.parse("March 25th, 2022");
+	
+	// We have to use a try/catch block because the test games do not have a valid start time.
 	try {
+		date = time.slice(0, 10);
 		time = time.replace(msRE, "");
 		time = Date.parse(time).toString("HH:mm");
 		minutes = time.slice(2);
 		hours = parseInt(time.substring(0, 2));
-	} catch {}
 
+		time = ""
+		
+		date = Date.parse(date);
+
+		if (date.equals(testingDate)) {
+			time = "";
+		} else if (date.equals(testingDate.add(1).day())) {
+			time = "Tomorrow, ";
+		} else if (date.equals(testingDate.add(-1).day())) {
+			time = "Yesterday, ";
+		} else if (Date.compare(testingDate, date) == 1) {
+			time = "A While Ago, ";
+		} else if (Date.compare(testingDate, date) == -1) {
+			time = "Later, ";
+		}
+	} catch (e) {
+		console.error(e);
+	}
+	
 	//Display the time in 12 hour format.
 	if (hours > 12) {
 		hours -= 12;
-		time = (hours + minutes + " PM")
+		time += (hours + minutes + " PM");
 	} else {
-		time = (hours + minutes + " AM")
+		time += (hours + minutes + " AM");
 	}
 	
-
 	return time;
 }
 
