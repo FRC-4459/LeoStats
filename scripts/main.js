@@ -6,9 +6,6 @@ let infoArea = $(infoAreaDiv);
 
 //Used to shave the milliseconds off of game times
 const msRE = /\.[\d]*/
-//Used to take the timezone off of the date string after it's parsed
-
-const dtRE = /:[\d]{2}/
 
 function sortGames(games) {
 	let qualifiers = [];
@@ -45,30 +42,47 @@ function sortGames(games) {
 	return games;
 }
 
+function parseTime(game, time) {
+	//We have to use a try/catch block because the test games do not have a valid start time.
+	let minutes;
+	let hours;
+	try {
+		time = time.replace(msRE, "");
+		time = Date.parse(time).toString("HH:mm");
+		minutes = time.slice(2);
+		hours = parseInt(time.substring(0, 2));
+	} catch {}
+
+	//Display the time in 12 hour format.
+	if (hours > 12) {
+		hours -= 12;
+		time = (hours + minutes + " PM")
+	} else {
+		time = (hours + minutes + " AM")
+	}
+	
+
+	return time;
+}
+
+
 async function createGames() {
 	let frcNum = $(teamNum).val();
 	let frcCode = $(eventCode).val();
 	let res = await axios.get(`http://localhost:8000/events?teamNum=${frcNum}&eventCode=${frcCode}`);
 	let games = [];
     
+	// Clear the infoArea of any matches that might have been there.
+	infoArea.empty();
+
 	for (let i = 0; i < res.data.length; i++) { 
 		let currentGame = new game;
 		currentGame.matchTime = res.data[i].autoStartTime;
 		currentGame.matchNumber = res.data[i].matchNumber;
 		currentGame.description = res.data[i].description;
-		currentGame.startTime = res.data[i].actualStartTime;
-        
-		try {
-			currentGame.startTime = currentGame.startTime.replace(msRE, "");
-			currentGame.startTime = Date.parse(currentGame.startTime).toString();
-			let match = dtRE.exec(currentGame.startTime);
-			currentGame.startTime.slice(match.index);
-		} catch {
-			continue;
-		}
-		
+		currentGame.startTime = parseTime(currentGame, res.data[i].actualStartTime);
+
 		for (let l = 0; l < res.data[i].teams.length; l++) {
-        
 			if (l < 3) 
 			{ currentGame.red[l] = res.data[i].teams[l].teamNumber; } 
 			else 
@@ -79,13 +93,11 @@ async function createGames() {
 	}
     
 	console.log(`Got ${games.length} games from ${frcCode}.`);
+	
 	games = sortGames(games);
 
 	for (let i = 0; i < games.length; i++) 
 	{ renderGameDiv(games[i], frcNum); }
-
-	console.log("Rendered Divs.");
-	return games;
 }
 
 function renderGameDiv(game, frcNum) {
@@ -113,7 +125,7 @@ function renderGameDiv(game, frcNum) {
 			$(redTeam.contents()[(i * 4) + 1]).css("font-weight", "800");
 		}
 
-		$(gameHead.contents()[0]).text(game.description);
+		$(gameHead.contents()[0]).text(game.description + " - " + game.startTime);
 	}
 
 	infoArea.append(gameContainer.get(0));
@@ -121,7 +133,7 @@ function renderGameDiv(game, frcNum) {
 
 $(submitButton).on("click", createGames);
 
-//Renders the games if the user hits "enter" in the code input field
+// Renders the games if the user hits "enter" in the code input field
 $(eventCode).on("keydown", (e) => {
 	if (e.code == "Enter") {
 		createGames();
