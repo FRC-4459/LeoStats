@@ -2,7 +2,7 @@ import os
 import requests as HTTPRequests
 from dotenv import load_dotenv
 from LeoSrv import LeoStats
-from flask import request, Response
+from flask import request, Response, send_from_directory
 
 load_dotenv()
 
@@ -11,9 +11,12 @@ headers = {
     'If-Modified-Since': ''
         }
 
+
 @LeoStats.route('/')
 def index():
-    return "Hello, World!"
+    return send_from_directory('../../site/markup/', 'index.html')
+
+
 
 @LeoStats.route('/gamesByEvent')
 def gamesByEvent():
@@ -26,3 +29,21 @@ def gamesByEvent():
     print(f'FRC Request returned {res.status_code} - {res.reason}')
 
     return Response(res.text, 200)
+
+
+
+@LeoStats.route('/styles/<path:path>')
+def send_styles(path):
+    return send_from_directory('../../site/styles/', path)
+
+@LeoStats.route('/scripts/<path:path>')
+def send_scripts(path):
+    return send_from_directory('../../site/scripts/', path)
+
+@LeoStats.route('/assets/<path:path>')
+def send_assets(path):
+    return send_from_directory('../../assets/', path)
+
+@LeoStats.route('/assets/favicon.ico')
+def fav():
+    return send_from_directory(LeoStats.static_folder, 'favicon.ico')
